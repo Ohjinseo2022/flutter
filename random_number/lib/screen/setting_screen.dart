@@ -1,16 +1,25 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:random_number/component/number_to_image.dart';
 import 'package:random_number/constant/color.dart';
 
 class SettingScreen extends StatefulWidget {
-  const SettingScreen({super.key});
-
+  final int maxNumber;
+  const SettingScreen({super.key, required this.maxNumber});
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
 
 class _SettingScreenState extends State<SettingScreen> {
   double maxNumber = 1000;
+  @override
+  void initState() {
+    super.initState();
+    //widget은 createState 단계에서 사용 불가능하기 때문에 initState 단계에서 설정해준다!
+    maxNumber = widget.maxNumber.toDouble();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,13 +33,30 @@ class _SettingScreenState extends State<SettingScreen> {
               _Number(
                 maxNumber: maxNumber,
               ),
-              _Slider(),
-              _Button(),
+              _Slider(
+                value: maxNumber,
+                updateNumber: updateNumber,
+              ),
+              _Button(onPressed: onSaveMaxNumber),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void updateNumber(double newVal) {
+    setState(() {
+      maxNumber = newVal;
+    });
+  }
+
+  void onSaveMaxNumber() {
+    setState(() {
+      Navigator.of(context).pop(
+        maxNumber.toInt(),
+      );
+    });
   }
 }
 
@@ -41,23 +67,41 @@ class _Number extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Container(
-      child: NumberToImage(number: maxNumber.toInt()),
-    ));
+      child: Container(
+        child: NumberToImage(
+          number: maxNumber.toInt(),
+        ),
+      ),
+    );
   }
 }
 
 class _Slider extends StatelessWidget {
-  const _Slider({super.key});
+  final ValueChanged<double> updateNumber;
+  final double value;
+  const _Slider({super.key, required this.value, required this.updateNumber});
+  //, required this.updateNumber
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Slider(
+        value: value,
+        max: 100000,
+        min: 1000,
+        activeColor: redColor,
+        onChanged: (double newValue) {
+          print(newValue);
+          updateNumber(newValue);
+          // setState(() {
+          //   widget.updateNumber(newValue);
+          // });
+        });
   }
 }
 
 class _Button extends StatelessWidget {
-  const _Button({super.key});
+  final VoidCallback onPressed;
+  const _Button({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +110,7 @@ class _Button extends StatelessWidget {
         backgroundColor: redColor,
         foregroundColor: Colors.white,
       ),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
+      onPressed: onPressed,
       child: Text('저장!'),
     );
   }

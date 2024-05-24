@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:random_number/component/number_to_image.dart';
 import 'package:random_number/constant/color.dart';
@@ -19,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     456,
     789,
   ];
-
+  int maxNumber = 1000;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final Set<int> newNumbers = {};
 
     while (newNumbers.length < 3) {
-      final randomNumber = rand.nextInt(1000);
+      final randomNumber = rand.nextInt(maxNumber);
       newNumbers.add(randomNumber);
     }
 
@@ -58,20 +57,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void goSettingScreen() {
+  void goSettingScreen() async {
     print('페이지 이동해야해');
     // statefulWidget 클래스 내부에서 사용하는 context 는
     // build함수에서 제공해주는 context와 같다.(전역 적으로 사용 가능 하다)
     // context 에서는 widgetTree 의 Stack 정보를 가지고있음.
-    Navigator.of(context).push(
+    // 페이지 이동후 돌아오면 pop()에서 전달받은 값을 리턴받아 올수 있음
+    final result = await Navigator.of(context).push(
       MaterialPageRoute(
         //모든 builder 는 첫번째 매개변수로 BuildContext를 받게된다.
         builder: (BuildContext context) {
           //이동하고 싶은 페이지를 위젯으로 반환.
-          return SettingScreen();
+          return SettingScreen(
+            maxNumber: maxNumber,
+          );
         },
       ),
     );
+    print('result : ${result}');
+    maxNumber = result;
+    createNumbers();
   }
 }
 
