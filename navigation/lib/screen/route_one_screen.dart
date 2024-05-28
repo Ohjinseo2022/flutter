@@ -14,49 +14,53 @@ class _RouteOneScreenState extends State<RouteOneScreen> {
   dynamic data;
   @override
   Widget build(BuildContext context) {
-    return DefaultLayout(
-      title: "RouteOneScreen",
-      children: [
-        Text(
-          'argument : ${widget.number}',
-          textAlign: TextAlign.center,
-        ),
-        OutlinedButton(
-          onPressed: () {
-            data = {"number": 456};
-            //pop도 다양한 기능이있음
-            Navigator.of(context).pop(
-              data,
-            );
-          },
-          child: Text("Pop"),
-        ),
-        OutlinedButton(
-          onPressed: () {
-            data = {"number": 456};
-            //pop도 다양한 기능이있음
-            Navigator.of(context).maybePop(
-              data,
-            );
-          },
-          child: Text("Maybe Pop"),
-        ),
-        OutlinedButton(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (BuildContext context) {
-                  return RouteTwoScreen();
-                },
-                settings: RouteSettings(
-                  arguments: 789,
+    return PopScope(
+      canPop:
+          true, // 플랫폼 자체 뒤로 가기 기능 동작 여부 설정 하기 -> 안드로이드에서 사용시 유용함 (실사용 해봐야함 )
+      child: DefaultLayout(
+        title: "RouteOneScreen",
+        children: [
+          Text(
+            'argument : ${widget.number}',
+            textAlign: TextAlign.center,
+          ),
+          OutlinedButton(
+            onPressed: () {
+              data = {"number": 456};
+              //pop도 다양한 기능이있음
+              Navigator.of(context).pop(
+                data,
+              );
+            },
+            child: Text("Pop"),
+          ),
+          OutlinedButton(
+            onPressed: () {
+              data = {"number": 456};
+              //pop도 다양한 기능이있음
+              Navigator.of(context).maybePop(
+                data,
+              );
+            },
+            child: Text("Maybe Pop"),
+          ),
+          OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (BuildContext context) {
+                    return RouteTwoScreen();
+                  },
+                  settings: RouteSettings(
+                    arguments: 789,
+                  ),
                 ),
-              ),
-            );
-          },
-          child: Text("push"),
-        ),
-      ],
+              );
+            },
+            child: Text("push"),
+          ),
+        ],
+      ),
     );
   }
 }
