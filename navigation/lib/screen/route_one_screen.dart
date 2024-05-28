@@ -24,11 +24,22 @@ class _RouteOneScreenState extends State<RouteOneScreen> {
         OutlinedButton(
           onPressed: () {
             data = {"number": 456};
+            //pop도 다양한 기능이있음
             Navigator.of(context).pop(
               data,
             );
           },
           child: Text("Pop"),
+        ),
+        OutlinedButton(
+          onPressed: () {
+            data = {"number": 456};
+            //pop도 다양한 기능이있음
+            Navigator.of(context).maybePop(
+              data,
+            );
+          },
+          child: Text("Maybe Pop"),
         ),
         OutlinedButton(
           onPressed: () {
