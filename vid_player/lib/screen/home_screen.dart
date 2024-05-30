@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : _VideoPlayer(
               video: video!,
+              onPickAnotherVideo: onLogoTap,
             ),
     );
   }
@@ -137,19 +138,34 @@ class _Title extends StatelessWidget {
 
 class _VideoPlayer extends StatefulWidget {
   final XFile video;
-  const _VideoPlayer({super.key, required this.video});
+  final VoidCallback onPickAnotherVideo;
+  const _VideoPlayer({
+    super.key,
+    required this.video,
+    required this.onPickAnotherVideo,
+  });
 
   @override
   State<_VideoPlayer> createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<_VideoPlayer> {
-  late final VideoPlayerController videoPlayerController;
+  late VideoPlayerController videoPlayerController;
 
   @override
   void initState() {
     super.initState();
     initializeController();
+  }
+
+  @override
+  void didUpdateWidget(covariant _VideoPlayer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // oldWiget은 과거 위젯 임 과거 위젯정보와 기존 위젯 정복가 다르다면
+    // initializeController 의 정보를 새로 갱신해줄 필요가 있음.
+    if (oldWidget.video.path != widget.video.path) {
+      initializeController();
+    }
   }
 
   initializeController() async {
@@ -190,7 +206,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
               videoPosition: videoPlayerController.value.position,
             ),
             _PickAnotherVideo(
-              onPressed: onPickAnotherVieo,
+              onPressed: widget.onPickAnotherVideo,
             ),
           ],
         ),
@@ -226,8 +242,6 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     }
     videoPlayerController.seekTo(position);
   }
-
-  onPickAnotherVieo() {}
 }
 
 class _PlayButton extends StatelessWidget {
