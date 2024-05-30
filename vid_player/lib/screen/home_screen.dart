@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +152,7 @@ class _VideoPlayer extends StatefulWidget {
 
 class _VideoPlayerState extends State<_VideoPlayer> {
   late VideoPlayerController videoPlayerController;
-
+  bool showIcons = true;
   @override
   void initState() {
     super.initState();
@@ -183,35 +184,54 @@ class _VideoPlayerState extends State<_VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    bool isPlay = false;
-    return Center(
-      child: AspectRatio(
-        //크기 조절용
-        aspectRatio: videoPlayerController.value.aspectRatio,
-        //동영상을 컨트롤하기위한 위젯을 추가하기 위해 스택을 사용
-        child: Stack(
-          children: [
-            //children 에 넣는 순서대로 스택구조(처음께 제일 아래로) 위젯이 생성된다.
-            VideoPlayer(
-              videoPlayerController,
-            ),
-            _PlayButton(
-              onForwardPressed: onForwardPressed,
-              onPlayPressed: onPlayPressed,
-              onReversePressed: onReversePressed,
-              isPlaying: videoPlayerController.value.isPlaying,
-            ),
-            _PlaySlier(
-              videoMaxPosition: videoPlayerController.value.duration,
-              videoPosition: videoPlayerController.value.position,
-            ),
-            _PickAnotherVideo(
-              onPressed: widget.onPickAnotherVideo,
-            ),
-          ],
+    return GestureDetector(
+      onTap: () => setState(() {
+        showIcons = !showIcons;
+      }),
+      child: Center(
+        child: AspectRatio(
+          //크기 조절용
+          aspectRatio: videoPlayerController.value.aspectRatio,
+          //동영상을 컨트롤하기위한 위젯을 추가하기 위해 스택을 사용
+          child: Stack(
+            children: [
+              //children 에 넣는 순서대로 스택구조(처음께 제일 아래로) 위젯이 생성된다.
+              VideoPlayer(
+                videoPlayerController,
+              ),
+              if (showIcons)
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.black.withOpacity(0.3),
+                ),
+              if (showIcons)
+                _PlayButton(
+                  onForwardPressed: onForwardPressed,
+                  onPlayPressed: onPlayPressed,
+                  onReversePressed: onReversePressed,
+                  isPlaying: videoPlayerController.value.isPlaying,
+                ),
+              if (showIcons)
+                _PlaySlier(
+                  videoMaxPosition: videoPlayerController.value.duration,
+                  videoPosition: videoPlayerController.value.position,
+                  onSliderChanged: onSliderChanged,
+                ),
+              if (showIcons)
+                _PickAnotherVideo(
+                  onPressed: widget.onPickAnotherVideo,
+                ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  onSliderChanged(double val) {
+    final position = Duration(seconds: val.toInt());
+    videoPlayerController.seekTo(position);
   }
 
   onForwardPressed() {
@@ -294,8 +314,13 @@ class _PlayButton extends StatelessWidget {
 class _PlaySlier extends StatelessWidget {
   final Duration videoPosition;
   final Duration videoMaxPosition;
-  const _PlaySlier(
-      {super.key, required this.videoPosition, required this.videoMaxPosition});
+  final ValueChanged<double> onSliderChanged;
+  const _PlaySlier({
+    super.key,
+    required this.videoPosition,
+    required this.videoMaxPosition,
+    required this.onSliderChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +345,7 @@ class _PlaySlier extends StatelessWidget {
               child: Slider(
                 value: videoPosition.inSeconds.toDouble(),
                 max: videoMaxPosition.inSeconds.toDouble(),
-                onChanged: (double val) {},
+                onChanged: onSliderChanged,
               ),
             ),
             Text(
