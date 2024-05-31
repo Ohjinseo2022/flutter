@@ -229,6 +229,7 @@ class _VideoPlayerState extends State<_VideoPlayer> {
     );
   }
 
+  //복습해보기
   onSliderChanged(double val) {
     final position = Duration(seconds: val.toInt());
     videoPlayerController.seekTo(position);
