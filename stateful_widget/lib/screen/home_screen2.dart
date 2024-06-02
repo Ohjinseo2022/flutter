@@ -25,7 +25,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
                 }
                 setState(() {});
               },
-              child: Text("커밋할거에요")),
+              child: Text("미니 pc 포트포워딩 예쩡")),
           SizedBox(
             height: 32,
           ),
