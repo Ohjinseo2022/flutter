@@ -1,4 +1,5 @@
 import 'package:calender_scheduler/component/calendar.dart';
+import 'package:calender_scheduler/component/today_banner.dart';
 import 'package:calender_scheduler/const/color.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -11,7 +12,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime? selectedDay;
+  DateTime selectedDay = DateTime.utc(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
+  DateTime focusedDay = DateTime.now();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,10 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Calendar(
-              focusedDay: DateTime(2024, 6, 1),
+              focusedDay: focusedDay,
               onDaySelected: onDaySelected,
               selectedDayPredicate: selectedDayPredicate,
             ),
+            TodayBanner(
+              selectedDay: selectedDay,
+              taskCount: 1,
+            )
           ],
         ),
       ),
@@ -35,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     print(focusedDay);
     setState(() {
       this.selectedDay = selectedDay;
+      this.focusedDay = focusedDay;
     });
   }
 
