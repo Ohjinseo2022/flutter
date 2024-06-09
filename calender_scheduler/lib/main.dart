@@ -11,6 +11,9 @@ void main() async {
   await initializeDateFormatting();
 
   runApp(MaterialApp(
+    theme: ThemeData(
+      fontFamily: "NotoSans",
+    ),
     home: HomeScreen(),
   ));
 }
