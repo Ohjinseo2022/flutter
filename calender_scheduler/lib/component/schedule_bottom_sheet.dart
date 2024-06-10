@@ -10,6 +10,8 @@ class ScheduleBottomSheet extends StatefulWidget {
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
 }
 
+// List<Map<String, dynamic>> -> 이런방식은 권장하지않음
+// TypeScript 처럼 규격을 정해놓고 관리하는게 맞음
 class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   String selectedColor = categoryColors.first;
   @override

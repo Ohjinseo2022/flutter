@@ -4,6 +4,7 @@ import 'package:calender_scheduler/component/schedule_bottom_sheet.dart';
 import 'package:calender_scheduler/component/schedule_card.dart';
 import 'package:calender_scheduler/component/today_banner.dart';
 import 'package:calender_scheduler/const/color.dart';
+import 'package:calender_scheduler/model/schedule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,6 +24,33 @@ class _HomeScreenState extends State<HomeScreen> {
     DateTime.now().day,
   );
   DateTime focusedDay = DateTime.now();
+
+  /// {
+  ///  2023-11-23 : [Schedule,Schedule,Schedule,...],
+  ///  2023-11-24 : [Schedule,Schedule,Schedule,...],
+  /// }
+  Map<DateTime, List<Schedule>> schedules = {
+    DateTime.utc(2024, 6, 10): [
+      Schedule(
+        id: 1,
+        startTime: 11,
+        endTime: 12,
+        content: '플러터강의 몇개 안남음 나이스',
+        date: DateTime.utc(2024, 6, 10),
+        color: categoryColors.first,
+        createdAt: DateTime.now().toUtc(),
+      ),
+      Schedule(
+        id: 2,
+        startTime: 13,
+        endTime: 16,
+        content: 'CI/CD 개념정리',
+        date: DateTime.utc(2024, 6, 10),
+        color: categoryColors[3],
+        createdAt: DateTime.now().toUtc(),
+      ),
+    ]
+  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,24 +89,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 16,
                 ),
                 child: ListView(
-                  children: [
-                    ScheduleCard(
-                      startTime: DateTime(
-                        2024,
-                        06,
-                        10,
-                        12,
-                      ),
-                      endTime: DateTime(
-                        2024,
-                        06,
-                        10,
-                        18,
-                      ),
-                      content: "회사에서 공부하기",
-                      color: Colors.blue,
-                    ),
-                  ],
+                  children: schedules.containsKey(selectedDay)
+                      ? schedules[selectedDay]!
+                          .map(
+                            (item) => ScheduleCard(
+                              startTime: item.startTime,
+                              endTime: item.endTime,
+                              content: item.content,
+                              color: Color(
+                                int.parse(
+                                  'FF${item.color}',
+                                  radix: 16,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList()
+                      : [],
                 ),
               ),
             )
