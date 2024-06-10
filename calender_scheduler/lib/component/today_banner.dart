@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 class TodayBanner extends StatelessWidget {
   final DateTime selectedDay;
   final int taskCount;
+
   const TodayBanner(
       {super.key, required this.selectedDay, required this.taskCount});
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle defaultTextStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w700,
+    );
     return Container(
       color: primaryColor,
       child: Padding(
@@ -21,17 +26,11 @@ class TodayBanner extends StatelessWidget {
           children: [
             Text(
               '${selectedDay.year}년 ${selectedDay.month}월 ${selectedDay.day}일',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+              style: defaultTextStyle,
             ),
             Text(
               '${taskCount} 개',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-              ),
+              style: defaultTextStyle,
             ),
           ],
         ),
