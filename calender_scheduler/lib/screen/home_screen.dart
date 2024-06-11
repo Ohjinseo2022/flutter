@@ -88,24 +88,36 @@ class _HomeScreenState extends State<HomeScreen> {
                   right: 16,
                   top: 16,
                 ),
-                child: ListView(
-                  children: schedules.containsKey(selectedDay)
-                      ? schedules[selectedDay]!
-                          .map(
-                            (item) => ScheduleCard(
-                              startTime: item.startTime,
-                              endTime: item.endTime,
-                              content: item.content,
-                              color: Color(
-                                int.parse(
-                                  'FF${item.color}',
-                                  radix: 16,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList()
-                      : [],
+                // LazyLoading
+                child: ListView.separated(
+                  //ListView.builder
+                  //화면에 보여줄 아이템의 갯수
+                  itemCount: schedules.containsKey(selectedDay)
+                      ? schedules[selectedDay]!.length
+                      : 0,
+                  itemBuilder: (context, index) {
+                    //해당 영역이 화면에 보일때 해당 함수가 실행 되어 위젯을 반환 해줌
+                    //List<Schedule>
+                    final scheduleModel = schedules[selectedDay]![index];
+                    print(index);
+                    return ScheduleCard(
+                      startTime: scheduleModel.startTime,
+                      endTime: scheduleModel.endTime,
+                      content: scheduleModel.content,
+                      color: Color(
+                        int.parse(
+                          'FF${scheduleModel.color}',
+                          radix: 16,
+                        ),
+                      ),
+                    );
+                  },
+                  //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
+                  separatorBuilder: (context, index) {
+                    return SizedBox(
+                      height: 8.0,
+                    );
+                  },
                 ),
               ),
             )
