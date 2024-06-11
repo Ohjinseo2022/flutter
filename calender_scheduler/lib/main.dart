@@ -1,4 +1,7 @@
+import 'package:calender_scheduler/const/color.dart';
+import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/screen/home_screen.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -10,6 +13,19 @@ void main() async {
 
   await initializeDateFormatting();
 
+  final dateBase = AppDatabase();
+
+  // await dateBase.createSchedule(
+  //   ScheduleTableCompanion(
+  //     startTime: Value(12),
+  //     endTime: Value(13),
+  //     content: Value('디비테스트'),
+  //     date: Value(DateTime.utc(2024, 06, 10)),
+  //     color: Value(categoryColors.first),
+  //   ),
+  // );
+  // final res = await dateBase.getSchedules();
+  // print(res);
   runApp(MaterialApp(
     theme: ThemeData(
       fontFamily: "NotoSans",

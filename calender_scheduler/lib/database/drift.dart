@@ -19,6 +19,17 @@ part 'drift.g.dart'; //-> 어노테이션을 기반으로 해당 파일이 자�
 @DriftDatabase(tables: [ScheduleTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
+  //Code Generation 완료후
+  // 쿼리 작성 !
+  // ScheduleTableData -> 우리가 생성한적 없지만 제네레이터가 알아서 만들어줌
+  // Table 정의 후 실제 사용은 TableData 형태로 가져와서 사용하게 된다
+  //js 에서 Promise 가 Dart 에서 Future 라고 보면됨
+  //단순 조회방법
+  Future<List<ScheduleTableData>> getSchedules() => select(scheduleTable).get();
+  //create 이후엔 우리가 지정해놓은 PK 값이 반환돤다. 현재 프로젝트에선 id-> int 형태임
+  //Companion 업데이트나 생성할때 사용
+  Future<int> createSchedule(ScheduleTableCompanion data) =>
+      into(scheduleTable).insert(data);
 
   @override
   int get schemaVersion => 1;
