@@ -5,9 +5,7 @@ import 'package:calender_scheduler/component/schedule_card.dart';
 import 'package:calender_scheduler/component/today_banner.dart';
 import 'package:calender_scheduler/const/color.dart';
 import 'package:calender_scheduler/model/schedule.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,16 +49,45 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     ]
   };
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
+        onPressed: () async {
+          final response = await showModalBottomSheet(
               context: context,
               builder: (_) {
-                return ScheduleBottomSheet();
+                return ScheduleBottomSheet(selectedDay: selectedDay);
               });
+          if (response == null) {
+            return;
+          }
+          //기본적인 방법
+          setState(() {
+            schedules = {
+              //1)
+              //기존 스케줄이 저장된 Map 을 그대로 복사
+              ...schedules,
+              //response.date을 키값으로 가진 새로운 Map 값 생성 or 기존 키에 접근
+              response.date: [
+                //기존에 키가 있다면 해당 키값이 가지고있는 value 그대로 복사,
+                if (schedules.containsKey(response.date))
+                  ...schedules[response.date]!,
+                //제일 마지막에 새로운 value 저장
+                response,
+              ]
+            };
+            //2)
+            //기존 스케쥴이 있는지 확인
+            // final dateExists = schedules.containsKey(response.date);
+            // //있다면 기존스케줄을 그대로 복사
+            // final List<Schedule> existingSchedules =
+            //     dateExists ? schedules[response.date]! : [];
+            // //제일 마지막 인덱스에 입력받은 스케줄 추가
+            // existingSchedules.add(response);
+            // schedules = {...schedules, response.date: existingSchedules};
+          });
         },
         backgroundColor: primaryColor,
         child: Icon(
