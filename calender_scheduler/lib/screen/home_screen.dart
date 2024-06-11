@@ -4,8 +4,10 @@ import 'package:calender_scheduler/component/schedule_bottom_sheet.dart';
 import 'package:calender_scheduler/component/schedule_card.dart';
 import 'package:calender_scheduler/component/today_banner.dart';
 import 'package:calender_scheduler/const/color.dart';
+import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/model/schedule.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -60,34 +62,36 @@ class _HomeScreenState extends State<HomeScreen> {
               builder: (_) {
                 return ScheduleBottomSheet(selectedDay: selectedDay);
               });
+
           if (response == null) {
             return;
           }
+          setState(() {});
           //기본적인 방법
-          setState(() {
-            schedules = {
-              //1)
-              //기존 스케줄이 저장된 Map 을 그대로 복사
-              ...schedules,
-              //response.date을 키값으로 가진 새로운 Map 값 생성 or 기존 키에 접근
-              response.date: [
-                //기존에 키가 있다면 해당 키값이 가지고있는 value 그대로 복사,
-                if (schedules.containsKey(response.date))
-                  ...schedules[response.date]!,
-                //제일 마지막에 새로운 value 저장
-                response,
-              ]
-            };
-            //2)
-            //기존 스케쥴이 있는지 확인
-            // final dateExists = schedules.containsKey(response.date);
-            // //있다면 기존스케줄을 그대로 복사
-            // final List<Schedule> existingSchedules =
-            //     dateExists ? schedules[response.date]! : [];
-            // //제일 마지막 인덱스에 입력받은 스케줄 추가
-            // existingSchedules.add(response);
-            // schedules = {...schedules, response.date: existingSchedules};
-          });
+          // setState(() {
+          //   schedules = {
+          //     //1)
+          //     //기존 스케줄이 저장된 Map 을 그대로 복사
+          //     ...schedules,
+          //     //response.date을 키값으로 가진 새로운 Map 값 생성 or 기존 키에 접근
+          //     response.date: [
+          //       //기존에 키가 있다면 해당 키값이 가지고있는 value 그대로 복사,
+          //       if (schedules.containsKey(response.date))
+          //         ...schedules[response.date]!,
+          //       //제일 마지막에 새로운 value 저장
+          //       response,
+          //     ]
+          //   };
+          //   //2)
+          //   //기존 스케쥴이 있는지 확인
+          //   // final dateExists = schedules.containsKey(response.date);
+          //   // //있다면 기존스케줄을 그대로 복사
+          //   // final List<Schedule> existingSchedules =
+          //   //     dateExists ? schedules[response.date]! : [];
+          //   // //제일 마지막 인덱스에 입력받은 스케줄 추가
+          //   // existingSchedules.add(response);
+          //   // schedules = {...schedules, response.date: existingSchedules};
+          // });
         },
         backgroundColor: primaryColor,
         child: Icon(
@@ -116,36 +120,66 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 16,
                 ),
                 // LazyLoading
-                child: ListView.separated(
-                  //ListView.builder
-                  //화면에 보여줄 아이템의 갯수
-                  itemCount: schedules.containsKey(selectedDay)
-                      ? schedules[selectedDay]!.length
-                      : 0,
-                  itemBuilder: (context, index) {
-                    //해당 영역이 화면에 보일때 해당 함수가 실행 되어 위젯을 반환 해줌
-                    //List<Schedule>
-                    final scheduleModel = schedules[selectedDay]![index];
-                    print(index);
-                    // return ScheduleCard(
-                    //   startTime: scheduleModel.startTime,
-                    //   endTime: scheduleModel.endTime,
-                    //   content: scheduleModel.content,
-                    //   color: Color(
-                    //     int.parse(
-                    //       'FF${scheduleModel.color}',
-                    //       radix: 16,
-                    //     ),
-                    //   ),
-                    // );
-                  },
-                  //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
-                  separatorBuilder: (context, index) {
-                    return SizedBox(
-                      height: 8.0,
-                    );
-                  },
-                ),
+                child: FutureBuilder<List<ScheduleTableData>>(
+                    future: GetIt.I<AppDatabase>().getSchedules(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text(snapshot.error.toString()),
+                        );
+                      }
+                      if (!snapshot.hasData &&
+                          snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+
+                      final schedules = snapshot.data!;
+                      final selectedSchedules = schedules
+                          .where(
+                              (item) => item.date.isAtSameMomentAs(selectedDay))
+                          .toList();
+                      return ListView.separated(
+                        //ListView.builder
+                        //화면에 보여줄 아이템의 갯수
+                        // itemCount: schedules.containsKey(selectedDay)
+                        //     ? schedules[selectedDay]!.length
+                        //     : 0,
+                        itemCount: selectedSchedules.length,
+                        itemBuilder: (context, index) {
+                          //해당 영역이 화면에 보일때 해당 함수가 실행 되어 위젯을 반환 해줌
+                          //List<Schedule>
+                          // final scheduleModel = schedules[selectedDay]![index];
+                          // print(index);
+                          // return ScheduleCard(
+                          //   startTime: scheduleModel.startTime,
+                          //   endTime: scheduleModel.endTime,
+                          //   content: scheduleModel.content,
+                          //   color: Color(
+                          //     int.parse(
+                          //       'FF${scheduleModel.color}',
+                          //       radix: 16,
+                          //     ),
+                          //   ),
+                          // );
+                          final schedule = selectedSchedules[index];
+                          return ScheduleCard(
+                              startTime: schedule.startTime,
+                              endTime: schedule.endTime,
+                              content: schedule.content,
+                              color: Color(
+                                int.parse('FF${schedule.color}', radix: 16),
+                              ));
+                        },
+                        //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
+                        separatorBuilder: (context, index) {
+                          return SizedBox(
+                            height: 8.0,
+                          );
+                        },
+                      );
+                    }),
               ),
             )
           ],

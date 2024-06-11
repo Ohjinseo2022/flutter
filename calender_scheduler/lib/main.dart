@@ -3,6 +3,7 @@ import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/screen/home_screen.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
@@ -13,8 +14,9 @@ void main() async {
 
   await initializeDateFormatting();
 
-  final dateBase = AppDatabase();
-
+  final dataBase = AppDatabase();
+  //의존성 주입 schedule_bottom_sheet.dart 140 line 확인
+  GetIt.I.registerSingleton<AppDatabase>(dataBase);
   // await dateBase.createSchedule(
   //   ScheduleTableCompanion(
   //     startTime: Value(12),
@@ -24,7 +26,7 @@ void main() async {
   //     color: Value(categoryColors.first),
   //   ),
   // );
-  // final res = await dateBase.getSchedules();
+  // final res = await dataBase.getSchedules();
   // print(res);
   runApp(MaterialApp(
     theme: ThemeData(

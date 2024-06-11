@@ -1,8 +1,10 @@
 import 'package:calender_scheduler/component/custom_text_field.dart';
 import 'package:calender_scheduler/const/color.dart';
+import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/model/schedule.dart';
-import 'package:flutter/foundation.dart';
+import 'package:drift/drift.dart' hide Column; // 겹치는 이름이 있을때 숨기는 방법
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
   final DateTime selectedDay;
@@ -126,7 +128,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     });
   }
 
-  void onSavePressed() {
+  void onSavePressed() async {
     final validate = formKey.currentState!.validate();
     if (validate) {
       formKey.currentState!.save();
@@ -134,6 +136,17 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       print(endTime);
       print(content);
       print(selectedColor);
+      //필요한 곳에서 사용
+      final dataBase = GetIt.I<AppDatabase>();
+      final result = await dataBase.createSchedule(
+        ScheduleTableCompanion(
+          startTime: Value(startTime!),
+          endTime: Value(endTime!),
+          content: Value(content!),
+          color: Value(selectedColor),
+          date: Value(widget.selectedDay),
+        ),
+      );
       // final schedule = ScheduleTable(
       //   id: 999,
       //   startTime: startTime!,
@@ -144,6 +157,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       //   createdAt: DateTime.now().toUtc(),
       // );
       // Navigator.of(context).pop(schedule);
+      Navigator.of(context).pop(result);
     }
   }
 }
