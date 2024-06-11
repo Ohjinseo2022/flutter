@@ -27,27 +27,27 @@ class _HomeScreenState extends State<HomeScreen> {
   ///  2023-11-23 : [Schedule,Schedule,Schedule,...],
   ///  2023-11-24 : [Schedule,Schedule,Schedule,...],
   /// }
-  Map<DateTime, List<Schedule>> schedules = {
-    DateTime.utc(2024, 6, 10): [
-      Schedule(
-        id: 1,
-        startTime: 11,
-        endTime: 12,
-        content: '플러터강의 몇개 안남음 나이스',
-        date: DateTime.utc(2024, 6, 10),
-        color: categoryColors.first,
-        createdAt: DateTime.now().toUtc(),
-      ),
-      Schedule(
-        id: 2,
-        startTime: 13,
-        endTime: 16,
-        content: 'CI/CD 개념정리',
-        date: DateTime.utc(2024, 6, 10),
-        color: categoryColors[3],
-        createdAt: DateTime.now().toUtc(),
-      ),
-    ]
+  Map<DateTime, List<ScheduleTable>> schedules = {
+    // DateTime.utc(2024, 6, 10): [
+    //   ScheduleTable(
+    //     id: 1,
+    //     startTime: 11,
+    //     endTime: 12,
+    //     content: '플러터강의 몇개 안남음 나이스',
+    //     date: DateTime.utc(2024, 6, 10),
+    //     color: categoryColors.first,
+    //     createdAt: DateTime.now().toUtc(),
+    //   ),
+    //   ScheduleTable(
+    //     id: 2,
+    //     startTime: 13,
+    //     endTime: 16,
+    //     content: 'CI/CD 개념정리',
+    //     date: DateTime.utc(2024, 6, 10),
+    //     color: categoryColors[3],
+    //     createdAt: DateTime.now().toUtc(),
+    //   ),
+    // ]
   };
 
   @override
@@ -127,17 +127,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     //List<Schedule>
                     final scheduleModel = schedules[selectedDay]![index];
                     print(index);
-                    return ScheduleCard(
-                      startTime: scheduleModel.startTime,
-                      endTime: scheduleModel.endTime,
-                      content: scheduleModel.content,
-                      color: Color(
-                        int.parse(
-                          'FF${scheduleModel.color}',
-                          radix: 16,
-                        ),
-                      ),
-                    );
+                    // return ScheduleCard(
+                    //   startTime: scheduleModel.startTime,
+                    //   endTime: scheduleModel.endTime,
+                    //   content: scheduleModel.content,
+                    //   color: Color(
+                    //     int.parse(
+                    //       'FF${scheduleModel.color}',
+                    //       radix: 16,
+                    //     ),
+                    //   ),
+                    // );
                   },
                   //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
                   separatorBuilder: (context, index) {

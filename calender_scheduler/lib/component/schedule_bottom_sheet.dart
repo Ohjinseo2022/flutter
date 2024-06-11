@@ -134,16 +134,16 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       print(endTime);
       print(content);
       print(selectedColor);
-      final schedule = Schedule(
-        id: 999,
-        startTime: startTime!,
-        endTime: endTime!,
-        content: content!,
-        date: widget.selectedDay,
-        color: selectedColor,
-        createdAt: DateTime.now().toUtc(),
-      );
-      Navigator.of(context).pop(schedule);
+      // final schedule = ScheduleTable(
+      //   id: 999,
+      //   startTime: startTime!,
+      //   endTime: endTime!,
+      //   content: content!,
+      //   date: widget.selectedDay,
+      //   color: selectedColor,
+      //   createdAt: DateTime.now().toUtc(),
+      // );
+      // Navigator.of(context).pop(schedule);
     }
   }
 }
