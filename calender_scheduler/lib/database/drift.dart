@@ -25,7 +25,16 @@ class AppDatabase extends _$AppDatabase {
   // Table 정의 후 실제 사용은 TableData 형태로 가져와서 사용하게 된다
   //js 에서 Promise 가 Dart 에서 Future 라고 보면됨
   //단순 조회방법
-  Future<List<ScheduleTableData>> getSchedules() => select(scheduleTable).get();
+  Future<List<ScheduleTableData>> getSchedules(DateTime date) {
+    //                            . 은 실행한 결과값! .. 은 실행한 대상을 반환
+    return (select(scheduleTable)..where((tbl) => tbl.date.equals(date))).get();
+    // 밑에 세줄 동일
+    // final selectQuery = select(scheduleTable);
+    // //select * from ScheduleTable where date = {date} 느낌 ?
+    // selectQuery.where((table) => table.date.equals(date));
+    // return selectQuery.get();
+  }
+
   //create 이후엔 우리가 지정해놓은 PK 값이 반환돤다. 현재 프로젝트에선 id-> int 형태임
   //Companion 업데이트나 생성할때 사용
   Future<int> createSchedule(ScheduleTableCompanion data) =>

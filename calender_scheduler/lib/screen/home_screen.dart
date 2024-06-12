@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // LazyLoading
                 child: FutureBuilder<List<ScheduleTableData>>(
-                    future: GetIt.I<AppDatabase>().getSchedules(),
+                    future: GetIt.I<AppDatabase>().getSchedules(selectedDay),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return Center(
@@ -134,19 +134,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CircularProgressIndicator(),
                         );
                       }
-
+                      // 데이터 베이스에서 가져올때 이미 결정나야함
                       final schedules = snapshot.data!;
-                      final selectedSchedules = schedules
-                          .where(
-                              (item) => item.date.isAtSameMomentAs(selectedDay))
-                          .toList();
+                      // 이미 결정난코드
+                      // final selectedSchedules = schedules
+                      //     .where(
+                      //         (item) => item.date.isAtSameMomentAs(selectedDay))
+                      //     .toList();
                       return ListView.separated(
                         //ListView.builder
                         //화면에 보여줄 아이템의 갯수
                         // itemCount: schedules.containsKey(selectedDay)
                         //     ? schedules[selectedDay]!.length
                         //     : 0,
-                        itemCount: selectedSchedules.length,
+                        itemCount: schedules.length,
                         itemBuilder: (context, index) {
                           //해당 영역이 화면에 보일때 해당 함수가 실행 되어 위젯을 반환 해줌
                           //List<Schedule>
@@ -163,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           //     ),
                           //   ),
                           // );
-                          final schedule = selectedSchedules[index];
+                          final schedule = schedules[index];
                           return ScheduleCard(
                               startTime: schedule.startTime,
                               endTime: schedule.endTime,
