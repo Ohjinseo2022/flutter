@@ -57,6 +57,16 @@ class AppDatabase extends _$AppDatabase {
   Future<int> removeSchedule(int id) =>
       (delete(scheduleTable)..where((tbl) => tbl.id.equals(id))).go();
 
+  Future<int> updateScheduleById(int id, ScheduleTableCompanion data) =>
+      //새로 입력한 데이터를 받아와서 id 정보로 조회, 데이터 업데이트 처리
+      (update(scheduleTable)
+            ..where(
+              (tbl) => tbl.id.equals(id),
+            ))
+          .write(data);
+  Future<ScheduleTableData> getScheduleById(int id) =>
+      (select(scheduleTable)..where((tbl) => tbl.id.equals(id)))
+          .getSingle(); //하나만 가져오는 방법
   @override
   int get schemaVersion => 1;
 }

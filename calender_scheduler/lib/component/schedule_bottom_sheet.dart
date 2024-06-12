@@ -7,8 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 class ScheduleBottomSheet extends StatefulWidget {
+  final int? id;
   final DateTime selectedDay;
-  const ScheduleBottomSheet({super.key, required this.selectedDay});
+  // 만약에 기존 아이디가 입력들어오면 기존 일정을 불러온다
+  const ScheduleBottomSheet({super.key, required this.selectedDay, this.id});
 
   @override
   State<ScheduleBottomSheet> createState() => _ScheduleBottomSheetState();
@@ -23,47 +25,83 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   String? content;
 
   String selectedColor = categoryColors.first;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initCategory();
+  }
+
+  //?? 어차피 바뀌는거 아닌가 싶긴한데 강의에서 이렇게나옴
+  initCategory() async {
+    if (widget.id != null) {
+      final res = await GetIt.I<AppDatabase>().getScheduleById(widget.id!);
+      setState(() {
+        selectedColor = res.color;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      height: 600,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
-          child: Form(
-            key: formKey,
-            child: Column(
-              children: [
-                _Time(
-                  onStartSaved: onTimeSaved,
-                  onStartValidate: onTimeValidate,
-                  onEndSaved: onTimeSaved,
-                  onEndValidate: onTimeValidate,
+    return FutureBuilder<ScheduleTableData>(
+        future: widget.id == null
+            ? null
+            : GetIt.I<AppDatabase>().getScheduleById(widget.id!),
+        builder: (context, snapshot) {
+          //데이터를 가져오는 중이라면. 로딩창을 보여주게 한다!
+          if (widget.id != null &&
+              snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
+          final data = snapshot.data;
+
+          return Container(
+            color: Colors.white,
+            height: 600,
+            child: SafeArea(
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(left: 8.0, right: 8.0, top: 16.0),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      _Time(
+                        onStartSaved: onTimeSaved,
+                        onStartValidate: onTimeValidate,
+                        onEndSaved: onTimeSaved,
+                        onEndValidate: onTimeValidate,
+                        startTimeInitValue: data?.startTime.toString(),
+                        endTimeInitValue: data?.endTime.toString(),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _Content(
+                        onSaved: onContentSaved,
+                        onValidate: onContentValidate,
+                        initialValue: data?.content.toString(),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _Categories(
+                          selectedColor: selectedColor,
+                          onChangeSelectedColor: onChangeSelectedColor),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      _SaveButton(onPressed: onSavePressed),
+                    ],
+                  ),
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                _Content(
-                  onSaved: onContentSaved,
-                  onValidate: onContentValidate,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                _Categories(
-                    selectedColor: selectedColor,
-                    onChangeSelectedColor: onChangeSelectedColor),
-                SizedBox(
-                  height: 8,
-                ),
-                _SaveButton(onPressed: onSavePressed),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 
   void onTimeSaved(String type, String? val) {
@@ -138,15 +176,25 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       print(selectedColor);
       //필요한 곳에서 사용
       final dataBase = GetIt.I<AppDatabase>();
-      final result = await dataBase.createSchedule(
-        ScheduleTableCompanion(
-          startTime: Value(startTime!),
-          endTime: Value(endTime!),
-          content: Value(content!),
-          color: Value(selectedColor),
-          date: Value(widget.selectedDay),
-        ),
-      );
+      final result = widget?.id == null
+          ? await dataBase.createSchedule(
+              ScheduleTableCompanion(
+                startTime: Value(startTime!),
+                endTime: Value(endTime!),
+                content: Value(content!),
+                color: Value(selectedColor),
+                date: Value(widget.selectedDay),
+              ),
+            )
+          : await dataBase.updateScheduleById(
+              widget.id!,
+              ScheduleTableCompanion(
+                startTime: Value(startTime!),
+                endTime: Value(endTime!),
+                content: Value(content!),
+                color: Value(selectedColor),
+                date: Value(widget.selectedDay),
+              ));
       // final schedule = ScheduleTable(
       //   id: 999,
       //   startTime: startTime!,
@@ -170,6 +218,8 @@ class _Time extends StatelessWidget {
   final OnTextFieldSaved onEndSaved;
   final FormFieldValidator<String> onStartValidate;
   final FormFieldValidator<String> onEndValidate;
+  final String? startTimeInitValue;
+  final String? endTimeInitValue;
   // final OnTextFieldValidate onStartValidate;
   // final OnTextFieldValidate onEndValidate;
 
@@ -182,6 +232,8 @@ class _Time extends StatelessWidget {
     required this.onEndValidate,
     required this.onStartSaved,
     required this.onStartValidate,
+    this.startTimeInitValue,
+    this.endTimeInitValue,
   });
 
   @override
@@ -206,6 +258,7 @@ class _Time extends StatelessWidget {
                 //   return result;
                 // },
                 validator: onStartValidate,
+                initialValue: startTimeInitValue,
               ),
             ),
             SizedBox(
@@ -222,6 +275,7 @@ class _Time extends StatelessWidget {
                 //   return result;
                 // },
                 validator: onEndValidate,
+                initialValue: endTimeInitValue,
               ),
             ),
           ],
@@ -249,7 +303,12 @@ class _Time extends StatelessWidget {
 class _Content extends StatelessWidget {
   final FormFieldSetter<String> onSaved;
   final FormFieldValidator<String> onValidate;
-  const _Content({super.key, required this.onSaved, required this.onValidate});
+  final String? initialValue;
+  const _Content(
+      {super.key,
+      required this.onSaved,
+      required this.onValidate,
+      this.initialValue});
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +318,7 @@ class _Content extends StatelessWidget {
         expand: true,
         onSaved: onSaved,
         validator: onValidate,
+        initialValue: initialValue,
       ),
     );
   }

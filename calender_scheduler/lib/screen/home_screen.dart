@@ -196,13 +196,28 @@ class _HomeScreenState extends State<HomeScreen> {
                             //   // setState(() {});
                             //   return true;
                             // },
-                            child: ScheduleCard(
-                                startTime: schedule.startTime,
-                                endTime: schedule.endTime,
-                                content: schedule.content,
-                                color: Color(
-                                  int.parse('FF${schedule.color}', radix: 16),
-                                )),
+                            child: GestureDetector(
+                              onTap: () async {
+                                final response = await showModalBottomSheet(
+                                    context: context,
+                                    builder: (_) {
+                                      return ScheduleBottomSheet(
+                                          selectedDay: selectedDay,
+                                          id: schedule.id);
+                                    });
+
+                                if (response == null) {
+                                  return;
+                                }
+                              },
+                              child: ScheduleCard(
+                                  startTime: schedule.startTime,
+                                  endTime: schedule.endTime,
+                                  content: schedule.content,
+                                  color: Color(
+                                    int.parse('FF${schedule.color}', radix: 16),
+                                  )),
+                            ),
                           );
                         },
                         //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
