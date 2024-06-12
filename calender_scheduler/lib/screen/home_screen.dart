@@ -6,6 +6,7 @@ import 'package:calender_scheduler/component/today_banner.dart';
 import 'package:calender_scheduler/const/color.dart';
 import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/model/schedule.dart';
+import 'package:calender_scheduler/model/schedule_with_category.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -123,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 // LazyLoading
                 // 이런상황에선 스트림빌더가 더 적합함수 있음
-                child: StreamBuilder<List<ScheduleTableData>>(
+                child: StreamBuilder<List<ScheduleWithCategory>>(
                     stream:
                         GetIt.I<AppDatabase>().getStreamSchedules(selectedDay),
                     builder: (context, snapshot) {
@@ -174,7 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           //     ),
                           //   ),
                           // );
-                          final schedule = schedules[index];
+                          final scheduleWithCategory = schedules[index];
+                          final schedule = scheduleWithCategory.scheduleTable;
+                          final category = scheduleWithCategory.categoryTable;
                           return Dismissible(
                             //필수 ! 유니크한 값을 넣어준다
                             key: ObjectKey(schedule.id),
@@ -215,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   endTime: schedule.endTime,
                                   content: schedule.content,
                                   color: Color(
-                                    int.parse('FF${schedule.color}', radix: 16),
+                                    int.parse('FF${category.color}', radix: 16),
                                   )),
                             ),
                           );

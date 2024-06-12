@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:calender_scheduler/const/color.dart';
+import 'package:calender_scheduler/model/category.dart';
+import 'package:calender_scheduler/model/schedule_with_category.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 
@@ -16,7 +19,7 @@ import 'package:sqlite3/sqlite3.dart';
 part 'drift.g.dart'; //-> 어노테이션을 기반으로 해당 파일이 자동으로 생성될수있게 도와줌
 
 //어노테이션 테이블 생성시 리스트형태로 넣어주면된당!
-@DriftDatabase(tables: [ScheduleTable])
+@DriftDatabase(tables: [ScheduleTable, CategoryTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   //Code Generation 완료후
@@ -36,17 +39,31 @@ class AppDatabase extends _$AppDatabase {
   }
 
   //변화를 감지하여 계속받아온다 ?
-  Stream<List<ScheduleTableData>> getStreamSchedules(DateTime date) {
+  Stream<List<ScheduleWithCategory>> getStreamSchedules(DateTime date) {
     //                            . 은 실행한 결과값! .. 은 실행한 대상을 반환
-    return (select(scheduleTable)
-          ..where((tbl) => tbl.date.equals(date))
-          ..orderBy([
-            //정렬 기준 정리
-            (t) =>
-                OrderingTerm(expression: t.startTime, mode: OrderingMode.asc),
-            (t) => OrderingTerm(expression: t.endTime, mode: OrderingMode.asc),
-          ]))
-        .watch();
+    // return (select(scheduleTable)
+    //       ..where((tbl) => tbl.date.equals(date))
+    //       ..orderBy([
+    //         //정렬 기준 정리
+    //         (t) =>
+    //             OrderingTerm(expression: t.startTime, mode: OrderingMode.asc),
+    //         (t) => OrderingTerm(expression: t.endTime, mode: OrderingMode.asc),
+    //       ]))
+    //     .watch();
+    final query = select(scheduleTable).join(
+      [
+        innerJoin(
+          categoryTable,
+          categoryTable.id.equalsExp(scheduleTable.colorId),
+        ),
+      ],
+    )..where(scheduleTable.date.equals(date));
+    return query.map((row) {
+      final schedule = row.readTable(scheduleTable);
+      final category = row.readTable(categoryTable);
+      return ScheduleWithCategory(
+          categoryTable: category, scheduleTable: schedule);
+    }).watch();
   }
 
   //create 이후엔 우리가 지정해놓은 PK 값이 반환돤다. 현재 프로젝트에선 id-> int 형태임
@@ -64,9 +81,34 @@ class AppDatabase extends _$AppDatabase {
               (tbl) => tbl.id.equals(id),
             ))
           .write(data);
-  Future<ScheduleTableData> getScheduleById(int id) =>
-      (select(scheduleTable)..where((tbl) => tbl.id.equals(id)))
-          .getSingle(); //하나만 가져오는 방법
+  Future<ScheduleWithCategory> getScheduleById(int id) {
+    final query = (select(scheduleTable).join(
+      [
+        innerJoin(
+          categoryTable,
+          categoryTable.id.equalsExp(scheduleTable.colorId),
+        )
+      ],
+    )..where(scheduleTable.id.equals(id)));
+
+    return query.map((row) {
+      final schedule = row.readTable(scheduleTable);
+      final category = row.readTable(categoryTable);
+      return ScheduleWithCategory(
+          categoryTable: category, scheduleTable: schedule);
+    }).getSingle();
+
+    // return (select(scheduleTable)..where((tbl) => tbl.id.equals(id)))
+    //     .getSingle(); //하나만 가져오는 방법
+  }
+
+  // 카테고리 테이블 조회
+  Future<List<CategoryTableData>> getCategories() =>
+      select(categoryTable).get();
+
+  Future<int> createCategory(CategoryTableCompanion data) =>
+      into(categoryTable).insert(data);
+
   @override
   int get schemaVersion => 1;
 }

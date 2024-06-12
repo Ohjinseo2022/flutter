@@ -2,6 +2,7 @@ import 'package:calender_scheduler/component/custom_text_field.dart';
 import 'package:calender_scheduler/const/color.dart';
 import 'package:calender_scheduler/database/drift.dart';
 import 'package:calender_scheduler/model/schedule.dart';
+import 'package:calender_scheduler/model/schedule_with_category.dart';
 import 'package:drift/drift.dart' hide Column; // 겹치는 이름이 있을때 숨기는 방법
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -24,8 +25,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
   int? endTime;
   String? content;
 
-  String selectedColor = categoryColors.first;
-
+  int? selectedColorId;
   @override
   void initState() {
     // TODO: implement initState
@@ -38,14 +38,22 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     if (widget.id != null) {
       final res = await GetIt.I<AppDatabase>().getScheduleById(widget.id!);
       setState(() {
-        selectedColor = res.color;
+        selectedColorId = res.categoryTable.id;
+      });
+    } else {
+      final res = await GetIt.I<AppDatabase>().getCategories();
+      setState(() {
+        selectedColorId = res.first.id;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<ScheduleTableData>(
+    if (selectedColorId == null) {
+      return Container();
+    }
+    return FutureBuilder<ScheduleWithCategory>(
         future: widget.id == null
             ? null
             : GetIt.I<AppDatabase>().getScheduleById(widget.id!),
@@ -56,7 +64,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
               !snapshot.hasData) {
             return CircularProgressIndicator();
           }
-          final data = snapshot.data;
+          final data = snapshot.data?.scheduleTable;
 
           return Container(
             color: Colors.white,
@@ -89,7 +97,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                         height: 8,
                       ),
                       _Categories(
-                          selectedColor: selectedColor,
+                          selectedColor: selectedColorId!,
                           onChangeSelectedColor: onChangeSelectedColor),
                       SizedBox(
                         height: 8,
@@ -160,9 +168,9 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
     return null;
   }
 
-  void onChangeSelectedColor(String color) {
+  void onChangeSelectedColor(int color) {
     setState(() {
-      selectedColor = color;
+      selectedColorId = color;
     });
   }
 
@@ -173,16 +181,16 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
       print(startTime);
       print(endTime);
       print(content);
-      print(selectedColor);
+      print(selectedColorId);
       //필요한 곳에서 사용
       final dataBase = GetIt.I<AppDatabase>();
-      final result = widget?.id == null
+      final result = widget.id == null
           ? await dataBase.createSchedule(
               ScheduleTableCompanion(
                 startTime: Value(startTime!),
                 endTime: Value(endTime!),
                 content: Value(content!),
-                color: Value(selectedColor),
+                colorId: Value(selectedColorId!),
                 date: Value(widget.selectedDay),
               ),
             )
@@ -192,7 +200,7 @@ class _ScheduleBottomSheetState extends State<ScheduleBottomSheet> {
                 startTime: Value(startTime!),
                 endTime: Value(endTime!),
                 content: Value(content!),
-                color: Value(selectedColor),
+                colorId: Value(selectedColorId!),
                 date: Value(widget.selectedDay),
               ));
       // final schedule = ScheduleTable(
@@ -325,10 +333,10 @@ class _Content extends StatelessWidget {
 }
 
 // 함수에 특정 파라미터를 받고 최 상위에서 상태 관리를 하고싶을떄 이런 방식을 사용한다.
-typedef OnColorSelected = void Function(String color);
+typedef OnColorSelected = void Function(int color);
 
 class _Categories extends StatelessWidget {
-  final String selectedColor;
+  final int selectedColor;
   final OnColorSelected onChangeSelectedColor;
   const _Categories(
       {super.key,
@@ -337,35 +345,42 @@ class _Categories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      // mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: categoryColors
-          .map(
-            (color) => GestureDetector(
-              onTap: () {
-                onChangeSelectedColor(color);
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(int.parse('FF${color}', radix: 16)),
-                    shape: BoxShape.circle,
-                    border: color == selectedColor
-                        ? Border.all(
-                            color: Colors.black,
-                            width: 4.0,
-                          )
-                        : null,
+    return FutureBuilder(
+        future: GetIt.I<AppDatabase>().getCategories(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          return Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: snapshot.data!
+                .map(
+                  (item) => GestureDetector(
+                    onTap: () {
+                      onChangeSelectedColor(item.id);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Color(int.parse('FF${item.color}', radix: 16)),
+                          shape: BoxShape.circle,
+                          border: item.id == selectedColor
+                              ? Border.all(
+                                  color: Colors.black,
+                                  width: 4.0,
+                                )
+                              : null,
+                        ),
+                        width: 32,
+                        height: 32,
+                      ),
+                    ),
                   ),
-                  width: 32,
-                  height: 32,
-                ),
-              ),
-            ),
-          )
-          .toList(),
-    );
+                )
+                .toList(),
+          );
+        });
   }
 }
 

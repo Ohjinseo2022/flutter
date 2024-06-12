@@ -1,4 +1,6 @@
+import 'package:calender_scheduler/model/category.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 
 class ScheduleTable extends Table {
   /// 1) 식별 가능한 ID
@@ -23,7 +25,9 @@ class ScheduleTable extends Table {
 
   /// 6) 카테고리
   // final String color;
-  TextColumn get color => text()();
+  // TextColumn get color => text()();
+  IntColumn get colorId =>
+      integer().references(CategoryTable, #id)(); // 다른데이블 연결
 
   /// 7) 일정 생성날짜 시간
   // final DateTime createdAt;

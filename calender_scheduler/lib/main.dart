@@ -28,6 +28,17 @@ void main() async {
   // );
   // final res = await dataBase.getSchedules();
   // print(res);
+  final colors = await dataBase.getCategories();
+  // colors 가 없다면
+  if (colors.isEmpty) {
+    for (String hexCode in categoryColors) {
+      await dataBase.createCategory(
+        CategoryTableCompanion(
+          color: Value(hexCode),
+        ),
+      );
+    }
+  }
   runApp(MaterialApp(
     theme: ThemeData(
       fontFamily: "NotoSans",
