@@ -35,10 +35,27 @@ class AppDatabase extends _$AppDatabase {
     // return selectQuery.get();
   }
 
+  //변화를 감지하여 계속받아온다 ?
+  Stream<List<ScheduleTableData>> getStreamSchedules(DateTime date) {
+    //                            . 은 실행한 결과값! .. 은 실행한 대상을 반환
+    return (select(scheduleTable)
+          ..where((tbl) => tbl.date.equals(date))
+          ..orderBy([
+            //정렬 기준 정리
+            (t) =>
+                OrderingTerm(expression: t.startTime, mode: OrderingMode.asc),
+            (t) => OrderingTerm(expression: t.endTime, mode: OrderingMode.asc),
+          ]))
+        .watch();
+  }
+
   //create 이후엔 우리가 지정해놓은 PK 값이 반환돤다. 현재 프로젝트에선 id-> int 형태임
   //Companion 업데이트나 생성할때 사용
   Future<int> createSchedule(ScheduleTableCompanion data) =>
       into(scheduleTable).insert(data);
+
+  Future<int> removeSchedule(int id) =>
+      (delete(scheduleTable)..where((tbl) => tbl.id.equals(id))).go();
 
   @override
   int get schemaVersion => 1;

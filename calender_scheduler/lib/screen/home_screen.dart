@@ -66,7 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (response == null) {
             return;
           }
-          setState(() {});
+          //FutureBuilder 사용할떈 필요했음!
+          // setState(() {});
+
           //기본적인 방법
           // setState(() {
           //   schedules = {
@@ -120,16 +122,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 16,
                 ),
                 // LazyLoading
-                child: FutureBuilder<List<ScheduleTableData>>(
-                    future: GetIt.I<AppDatabase>().getSchedules(selectedDay),
+                // 이런상황에선 스트림빌더가 더 적합함수 있음
+                child: StreamBuilder<List<ScheduleTableData>>(
+                    stream:
+                        GetIt.I<AppDatabase>().getStreamSchedules(selectedDay),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
                         return Center(
                           child: Text(snapshot.error.toString()),
                         );
                       }
-                      if (!snapshot.hasData &&
-                          snapshot.connectionState == ConnectionState.waiting) {
+                      //FutureBuilder 사용시
+                      // if (!snapshot.hasData &&
+                      //     snapshot.connectionState == ConnectionState.waiting) {
+                      //   return Center(
+                      //     child: CircularProgressIndicator(),
+                      //   );
+                      // }
+                      if (snapshot.data == null) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -165,13 +175,35 @@ class _HomeScreenState extends State<HomeScreen> {
                           //   ),
                           // );
                           final schedule = schedules[index];
-                          return ScheduleCard(
-                              startTime: schedule.startTime,
-                              endTime: schedule.endTime,
-                              content: schedule.content,
-                              color: Color(
-                                int.parse('FF${schedule.color}', radix: 16),
-                              ));
+                          return Dismissible(
+                            //필수 ! 유니크한 값을 넣어준다
+                            key: ObjectKey(schedule.id),
+                            //방향설정
+                            direction: DismissDirection.endToStart,
+                            //설정한 방향에 맞을때 함수실행
+                            //StreamBuilder 는 값에 변경이 되면 builder 가 자동으로 다시 불리기 떄문에 더욱 간단하다.
+                            onDismissed: (DismissDirection direction) {
+                              //해당 함수가 실행되기 전에 위젯이 사라지는 애니메이션이 동작을 해서 setState를 해도 늦는다.? 좀 헷갈림
+                              //여기서 그냥 실행하면 A dismissed Dismissible widget is still part of the tree. 에러가 발생함
+                              GetIt.I<AppDatabase>()
+                                  .removeSchedule(schedule.id);
+                            },
+                            //데이터 통신시 해당 함수를 사용해야한다
+                            //삭제 처리가난 후에 다른 함수가 실행 되어야한다면 그때 onDismissed 함수를 사용하면된다.
+                            // confirmDismiss: (direction) async {
+                            //   await GetIt.I<AppDatabase>()
+                            //       .removeSchedule(schedule.id);
+                            //   // setState(() {});
+                            //   return true;
+                            // },
+                            child: ScheduleCard(
+                                startTime: schedule.startTime,
+                                endTime: schedule.endTime,
+                                content: schedule.content,
+                                color: Color(
+                                  int.parse('FF${schedule.color}', radix: 16),
+                                )),
+                          );
                         },
                         //itemBuilder 가 실행될때 separatorBuilder 도 같이 실행할수 있다.
                         separatorBuilder: (context, index) {
