@@ -111,6 +111,25 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  // 마이그레이션 하는 간단한 방법!
+  // @override
+  // MigrationStrategy get migration {
+  //   return MigrationStrategy(
+  //     onUpgrade: (Migrator m, int from, int to) async {
+  //       //m 마이그레이션에 필요한 기능 제공
+  //       //from 기존 사용자의 기기에 깔려있는 버전
+  //       //to 새로 마이그레이션(업데이트) 할 목표버전
+  //       //특정 버전에 맞게 계속 추가해줘야ㅏㅁ!
+  //       if (from < 2) {
+  //         await m.addColumn(categoryTable, categoryTable.randomNumber);
+  //       }
+  //       if (from < 3) {
+  //         await m.addColumn(categoryTable, categoryTable.randomNumber2);
+  //       }
+  //     },
+  //   );
+  // }
 }
 
 LazyDatabase _openConnection() {

@@ -111,10 +111,14 @@ class _HomeScreenState extends State<HomeScreen> {
               onDaySelected: onDaySelected,
               selectedDayPredicate: selectedDayPredicate,
             ),
-            TodayBanner(
-              selectedDay: selectedDay,
-              taskCount: 1,
-            ),
+            StreamBuilder<List<ScheduleWithCategory>>(
+                stream: GetIt.I<AppDatabase>().getStreamSchedules(selectedDay),
+                builder: (context, snapshot) {
+                  return TodayBanner(
+                    selectedDay: selectedDay,
+                    taskCount: !snapshot.hasData ? 0 : snapshot.data!.length,
+                  );
+                }),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(
