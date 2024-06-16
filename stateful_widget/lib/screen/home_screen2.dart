@@ -25,7 +25,7 @@ class _HomeScreen2State extends State<HomeScreen2> {
                 }
                 setState(() {});
               },
-              child: Text("우분투 ssh 외부접속 허용설정 완료")),
+              child: Text("WITN 부산 일정 완료")),
           SizedBox(
             height: 32,
           ),
