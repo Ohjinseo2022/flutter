@@ -16,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Region region = Region.seoul;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -48,8 +50,12 @@ class _HomeScreenState extends State<HomeScreen> {
               }
               return Column(
                 children: [
-                  MainStat(),
-                  CategoryStat(),
+                  MainStat(
+                    region: region,
+                  ),
+                  CategoryStat(
+                    region: region,
+                  ),
                   HourlyStat(),
                 ],
               );

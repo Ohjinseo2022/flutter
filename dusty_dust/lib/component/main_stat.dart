@@ -1,11 +1,14 @@
+import 'package:dusty_dust/const/status_level.dart';
 import 'package:dusty_dust/model/stat_model.dart';
 import 'package:dusty_dust/utils/date_utils.dart';
+import 'package:dusty_dust/utils/status_utils.dart';
 import 'package:flutter/material.dart' hide DateUtils;
 import 'package:get_it/get_it.dart';
 import 'package:isar/isar.dart';
 
 class MainStat extends StatelessWidget {
-  const MainStat({super.key});
+  final Region region;
+  MainStat({super.key, required this.region});
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +24,9 @@ class MainStat extends StatelessWidget {
             future: GetIt.I<Isar>()
                 .statModels
                 .filter()
-                .regionEqualTo(Region.seoul)
+                .regionEqualTo(region)
                 .itemCodeEqualTo(ItemCode.PM10)
+                .sortByDateTimeDesc()
                 .findFirst(),
             builder: (context, snapshot) {
               if (!snapshot.hasData &&
@@ -37,10 +41,12 @@ class MainStat extends StatelessWidget {
               }
 
               final statModel = snapshot.data!;
+              final status =
+                  StatusUtils.getStatusModelFromStat(stat: statModel);
               return Column(
                 children: [
                   Text(
-                    '서울',
+                    region.krName,
                     style: defaultStyle.copyWith(
                       fontSize: 40,
                     ),
@@ -52,19 +58,19 @@ class MainStat extends StatelessWidget {
                     height: 20,
                   ),
                   Image.asset(
-                    'asset/img/good.png',
+                    status.imagePath,
                     //MediaQuery.of(context).size.width 기종별 사이즈를 구할수있다!
                     width: MediaQuery.of(context).size.width / 2,
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  Text('보통',
+                  Text(status.label,
                       style: defaultStyle.copyWith(
                         fontSize: 40,
                       )),
                   Text(
-                    '나쁘지 않네요!',
+                    status.comment,
                     style: defaultStyle,
                   ),
                 ],

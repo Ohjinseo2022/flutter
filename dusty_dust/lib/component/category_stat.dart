@@ -1,8 +1,13 @@
 import 'package:dusty_dust/const/color.dart';
+import 'package:dusty_dust/model/stat_model.dart';
+import 'package:dusty_dust/utils/status_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:isar/isar.dart';
 
 class CategoryStat extends StatelessWidget {
-  const CategoryStat({super.key});
+  Region region;
+  CategoryStat({super.key, required this.region});
 
   @override
   Widget build(BuildContext context) {
@@ -49,36 +54,54 @@ class CategoryStat extends StatelessWidget {
                           bottomLeft: Radius.circular(16),
                           bottomRight: Radius.circular(16),
                         )),
-                    child: ListView(
-                      physics: PageScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      children: List.generate(
-                        6,
-                        (index) => SizedBox(
-                          // width: MediaQuery.of(context).size.width / 3,
-                          width: constraint.maxWidth / 3,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '미세먼지$index',
-                              ),
-                              SizedBox(
-                                height: 8.0,
-                              ),
-                              Image.asset(
-                                'asset/img/bad.png',
-                                width: 50.0,
-                              ),
-                              SizedBox(
-                                height: 8.0,
-                              ),
-                              Text('${index * 1000}mg')
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: FutureBuilder<List<StatModel>>(
+                        future: getCategoryStat(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData &&
+                              snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          }
+
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: Text('데이터가 없습니다.'),
+                            );
+                          }
+                          return ListView(
+                              physics: PageScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              children: snapshot.data!
+                                  .map(
+                                    (statModel) => SizedBox(
+                                      // width: MediaQuery.of(context).size.width / 3,
+                                      width: constraint.maxWidth / 3,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            statModel.itemCode.krName,
+                                          ),
+                                          SizedBox(
+                                            height: 8.0,
+                                          ),
+                                          Image.asset(
+                                            StatusUtils.getStatusModelFromStat(
+                                                    stat: statModel)
+                                                .imagePath,
+                                            width: 50.0,
+                                          ),
+                                          SizedBox(
+                                            height: 8.0,
+                                          ),
+                                          Text(statModel.stat.toString())
+                                        ],
+                                      ),
+                                    ),
+                                  )
+                                  .toList());
+                        }),
                   ),
                 )
               ],
@@ -87,5 +110,22 @@ class CategoryStat extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  //List<StatModel>
+  Future<List<StatModel>> getCategoryStat() async {
+    List<StatModel> result = [];
+    for (ItemCode code in ItemCode.values) {
+      final stat = await GetIt.I<Isar>()
+          .statModels
+          .filter()
+          .regionEqualTo(region)
+          .itemCodeEqualTo(code)
+          .sortByDateTimeDesc()
+          .findFirst();
+      result = [...result, stat!];
+    }
+
+    return result;
   }
 }
