@@ -48,61 +48,118 @@ class CategoryStat extends StatelessWidget {
                 ),
                 Expanded(
                   child: Container(
-                    decoration: BoxDecoration(
-                        color: lightColor,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(16),
-                          bottomRight: Radius.circular(16),
-                        )),
-                    child: FutureBuilder<List<StatModel>>(
-                        future: getCategoryStat(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData &&
-                              snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          }
+                      decoration: BoxDecoration(
+                          color: lightColor,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(16),
+                            bottomRight: Radius.circular(16),
+                          )),
+                      //강의 듣기전 코드
+                      child: ListView(
+                        physics: PageScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        children: ItemCode.values
+                            .map((code) => FutureBuilder<StatModel?>(
+                                future: GetIt.I<Isar>()
+                                    .statModels
+                                    .filter()
+                                    .regionEqualTo(region)
+                                    .itemCodeEqualTo(code)
+                                    .sortByDateTimeDesc()
+                                    .findFirst(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                      child: Text(snapshot.error.toString()),
+                                    );
+                                  }
+                                  if (!snapshot.hasData &&
+                                      snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  }
 
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: Text('데이터가 없습니다.'),
-                            );
-                          }
-                          return ListView(
-                              physics: PageScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              children: snapshot.data!
-                                  .map(
-                                    (statModel) => SizedBox(
-                                      // width: MediaQuery.of(context).size.width / 3,
-                                      width: constraint.maxWidth / 3,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            statModel.itemCode.krName,
-                                          ),
-                                          SizedBox(
-                                            height: 8.0,
-                                          ),
-                                          Image.asset(
-                                            StatusUtils.getStatusModelFromStat(
-                                                    stat: statModel)
-                                                .imagePath,
-                                            width: 50.0,
-                                          ),
-                                          SizedBox(
-                                            height: 8.0,
-                                          ),
-                                          Text(statModel.stat.toString())
-                                        ],
-                                      ),
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: Text('데이터가 없습니다.'),
+                                    );
+                                  }
+                                  final statModel = snapshot.data!;
+                                  return SizedBox(
+                                    width: constraint.maxWidth / 3,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(code.krName),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Image.asset(
+                                          StatusUtils.getStatusModelFromStat(
+                                                  stat: statModel)
+                                              .imagePath,
+                                          width: 50.0,
+                                        ),
+                                        SizedBox(
+                                          height: 8,
+                                        ),
+                                        Text(statModel.stat.toString())
+                                      ],
                                     ),
-                                  )
-                                  .toList());
-                        }),
-                  ),
+                                  );
+                                }))
+                            .toList(),
+                      )
+                      // FutureBuilder<List<StatModel>>(
+                      //     future: getCategoryStat(),
+                      //     builder: (context, snapshot) {
+                      //       if (!snapshot.hasData &&
+                      //           snapshot.connectionState ==
+                      //               ConnectionState.waiting) {
+                      //         return CircularProgressIndicator();
+                      //       }
+                      //
+                      //       if (!snapshot.hasData) {
+                      //         return Center(
+                      //           child: Text('데이터가 없습니다.'),
+                      //         );
+                      //       }
+                      //       return ListView(
+                      //           physics: PageScrollPhysics(),
+                      //           scrollDirection: Axis.horizontal,
+                      //           children: snapshot.data!
+                      //               .map(
+                      //                 (statModel) => SizedBox(
+                      //                   // width: MediaQuery.of(context).size.width / 3,
+                      //                   width: constraint.maxWidth / 3,
+                      //                   child: Column(
+                      //                     mainAxisAlignment:
+                      //                         MainAxisAlignment.center,
+                      //                     children: [
+                      //                       Text(
+                      //                         statModel.itemCode.krName,
+                      //                       ),
+                      //                       SizedBox(
+                      //                         height: 8.0,
+                      //                       ),
+                      //                       Image.asset(
+                      //                         StatusUtils.getStatusModelFromStat(
+                      //                                 stat: statModel)
+                      //                             .imagePath,
+                      //                         width: 50.0,
+                      //                       ),
+                      //                       SizedBox(
+                      //                         height: 8.0,
+                      //                       ),
+                      //                       Text(statModel.stat.toString())
+                      //                     ],
+                      //                   ),
+                      //                 ),
+                      //               )
+                      //               .toList());
+                      //     }),
+                      ),
                 )
               ],
             );
