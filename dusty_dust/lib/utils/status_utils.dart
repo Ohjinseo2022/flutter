@@ -25,7 +25,11 @@ class StatusUtils {
         }
       },
     );
+
     if (index < 0) {
+      print(stat.stat);
+      print(itemCode);
+      print(index);
       throw Exception('통계수치에 에러가 있습니다.');
     }
     return statusLevels[index - 1];

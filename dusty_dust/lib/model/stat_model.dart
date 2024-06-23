@@ -69,15 +69,19 @@ enum Region {
 }
 
 enum ItemCode {
+  PM10,
+  PM25,
   SO2,
   CO,
   O3,
-  NO2,
-  PM10,
-  PM25;
+  NO2;
 
   String get krName {
     switch (this) {
+      case ItemCode.PM10:
+        return '미세먼지';
+      case ItemCode.PM25:
+        return '초미세먼지';
       case ItemCode.SO2:
         return '이황산가스';
       case ItemCode.CO:
@@ -86,10 +90,6 @@ enum ItemCode {
         return '오존';
       case ItemCode.NO2:
         return '이산화질소';
-      case ItemCode.PM10:
-        return '미세먼지';
-      case ItemCode.PM25:
-        return '초미세먼지';
       default:
         throw Exception('존재하지 않는 코드입니다.');
     }
