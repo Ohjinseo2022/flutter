@@ -30,6 +30,9 @@ class StatusUtils {
       print(stat.stat);
       print(itemCode);
       print(index);
+      print('통계수치에 에러가 있습니다.');
+      return statusLevels[0];
+
       throw Exception('통계수치에 에러가 있습니다.');
     }
     return statusLevels[index - 1];

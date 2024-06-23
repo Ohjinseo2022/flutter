@@ -18,14 +18,26 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Region region = Region.seoul;
-
+  bool isExpanded = true;
+  // t
+  ScrollController scrollController = ScrollController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
     StatRepository.fetchData();
-    getCount();
+    // getCount();
+    //스크롤 될때마다 계산기능
+    scrollController.addListener(() {
+      //kToolbarHeight -> 기본 앱바의 높이
+      bool isExpanded = scrollController.offset < (500 - kToolbarHeight);
+      if (isExpanded != this.isExpanded) {
+        setState(() {
+          this.isExpanded = isExpanded;
+        });
+      }
+    });
   }
 
   getCount() async {
@@ -53,69 +65,95 @@ class _HomeScreenState extends State<HomeScreen> {
           return Scaffold(
             drawer: Drawer(
               backgroundColor: statusModel.darkColor,
-              child: ListView(children: [
-                DrawerHeader(
-                  margin: EdgeInsets.zero,
-                  child: Text(
-                    '지역선택',
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  ),
-                ),
-                ...Region.values
-                    .map((e) => ListTile(
-                          selected: e == region,
-                          tileColor: Colors.white,
-                          selectedTileColor: statusModel.lightColor,
-                          selectedColor: Colors.black,
-                          onTap: () {
-                            setState(() {
-                              region = e;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                          title: Text(e.krName),
-                        ))
-                    .toList(),
-              ]),
-            ),
-            appBar: AppBar(
-              backgroundColor: statusModel.primaryColor,
-              surfaceTintColor: statusModel.primaryColor,
-            ),
-            backgroundColor: statusModel.primaryColor,
-            body: SingleChildScrollView(
-              child:
-                  // FutureBuilder<List<StatModel>>(
-                  //     future: null,
-                  //     builder: (context, snapshot) {
-                  //       // 정확한 에러위치 파악 가능 !!!!!
-                  //       // print(snapshot.stackTrace);
-                  //       // print(snapshot.data);
-                  //       if (snapshot.hasData) {
-                  //         //스펠링 에러 무조건 발생 할듯! 모델을 만들어서 데이터를 규격화 진행후 개발을 진행할 필요성이 있다
-                  //         //java 의 DTO ts의 interface 개념이라고 보면 될듯 ?
-                  //         // print(snapshot.data!['response']['body']['items']);
-                  //       }
-                  //       return
-                  Column(
+              child: ListView(
                 children: [
-                  MainStat(
-                    region: region,
+                  DrawerHeader(
+                    margin: EdgeInsets.zero,
+                    child: Text(
+                      '지역선택',
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    ),
                   ),
-                  CategoryStat(
-                    region: region,
-                    darkColor: statusModel.darkColor,
-                    lightColor: statusModel.lightColor,
-                  ),
-                  HourlyStat(
-                    region: region,
-                    darkColor: statusModel.darkColor,
-                    lightColor: statusModel.lightColor,
-                  ),
+                  ...Region.values
+                      .map((e) => ListTile(
+                            selected: e == region,
+                            tileColor: Colors.white,
+                            selectedTileColor: statusModel.lightColor,
+                            selectedColor: Colors.black,
+                            onTap: () {
+                              setState(() {
+                                region = e;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                            title: Text(e.krName),
+                          ))
+                      .toList(),
                 ],
               ),
-              // }),
             ),
+
+            backgroundColor: statusModel.primaryColor,
+            body: CustomScrollView(
+              //스크롤 시 상태 컨트롤
+              controller: scrollController,
+              slivers: [
+                MainStat(
+                  region: region,
+                  primaryColor: statusModel.primaryColor,
+                  isExpanded: isExpanded,
+                ),
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      CategoryStat(
+                        region: region,
+                        darkColor: statusModel.darkColor,
+                        lightColor: statusModel.lightColor,
+                      ),
+                      HourlyStat(
+                        region: region,
+                        darkColor: statusModel.darkColor,
+                        lightColor: statusModel.lightColor,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            // body: SingleChildScrollView(
+            //   child:
+            // FutureBuilder<List<StatModel>>(
+            //     future: null,
+            //     builder: (context, snapshot) {
+            //       // 정확한 에러위치 파악 가능 !!!!!
+            //       // print(snapshot.stackTrace);
+            //       // print(snapshot.data);
+            //       if (snapshot.hasData) {
+            //         //스펠링 에러 무조건 발생 할듯! 모델을 만들어서 데이터를 규격화 진행후 개발을 진행할 필요성이 있다
+            //         //java 의 DTO ts의 interface 개념이라고 보면 될듯 ?
+            //         // print(snapshot.data!['response']['body']['items']);
+            //       }
+            //       return
+            //     Column(
+            //   children: [
+            //     MainStat(
+            //       region: region,
+            //     ),
+            //     CategoryStat(
+            //       region: region,
+            //       darkColor: statusModel.darkColor,
+            //       lightColor: statusModel.lightColor,
+            //     ),
+            //     HourlyStat(
+            //       region: region,
+            //       darkColor: statusModel.darkColor,
+            //       lightColor: statusModel.lightColor,
+            //     ),
+            //   ],
+            // ),
+            // }),
+            // ),
           );
         });
   }
