@@ -3,13 +3,15 @@ import 'dart:io';
 
 import 'package:actual/common/component/custom_text_form_field.dart';
 import 'package:actual/common/const/colors.dart';
+import 'package:actual/common/const/data.dart';
 import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/common/view/root_tab.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -20,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String password = '';
   @override
   Widget build(BuildContext context) {
+    final storage = FlutterSecureStorage();
     final dio = Dio();
     //현재 실행 환경 파악
     // 애플에서 시뮬레이터를 쓸떄는 - 시뮬레이터와 네트워크 환경이 똑같음
@@ -87,9 +90,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                     );
+                    final refreshToken = response.data['refreshToken'];
+                    final accessToken = response.data['accessToken'];
+                    // 1. 토큰이 유효한지 체크한다
+                    // 2. 토크인 유효하다면 로그인페이지는 패스
+                    await storage.write(
+                        key: REFRESH_TOKEN_KEY, value: refreshToken);
+                    await storage.write(
+                        key: ACCESS_TOKEN_KEY, value: accessToken);
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (_) => RootTab()));
-                    print(response.data);
                   },
                   child: Text("로그인"),
                 ),
