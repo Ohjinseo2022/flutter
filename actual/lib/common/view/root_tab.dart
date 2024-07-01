@@ -9,14 +9,62 @@ class RootTab extends StatefulWidget {
   State<RootTab> createState() => _RootTabState();
 }
 
-class _RootTabState extends State<RootTab> {
+class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
+  late TabController controller;
   int index = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //vsync 랜더링 위젯에서 사용하는것
+    controller = TabController(length: 4, vsync: this);
+    controller.addListener(tabListener);
+  }
+
+  //bottomNavigationBar 와 TabBarView 를 연동시키는 방법 !
+  void tabListener() {
+    setState(() {
+      index = controller.index;
+    });
+  }
+
+  @override
+  void dispose() {
+    //화면에서 벗어날때 항상 넣어줘랑
+    controller.removeListener(tabListener);
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       title: '오징 딜리버리',
-      child: Center(
-        child: Text('Root Tab'),
+      child: TabBarView(
+        physics: NeverScrollableScrollPhysics(),
+        controller: controller,
+        children: [
+          Center(
+            child: Container(
+              child: Text('홈'),
+            ),
+          ),
+          Center(
+            child: Container(
+              child: Text('음식'),
+            ),
+          ),
+          Center(
+            child: Container(
+              child: Text('주문'),
+            ),
+          ),
+          Center(
+            child: Container(
+              child: Text('프로필'),
+            ),
+          )
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: PRIMARY_COLOR,
@@ -26,12 +74,10 @@ class _RootTabState extends State<RootTab> {
         //기본 shifting
         type: BottomNavigationBarType.fixed,
         onTap: (int index) {
-          setState(() {
-            this.index = index;
-          });
+          controller.animateTo(index);
         },
         currentIndex: index,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
             label: "홈",
