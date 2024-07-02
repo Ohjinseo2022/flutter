@@ -3,6 +3,7 @@ import 'package:actual/common/const/data.dart';
 import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/common/view/root_tab.dart';
 import 'package:actual/user/view/login_screen.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,16 +28,26 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void checkToken() async {
-    final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
-    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-    //둘중 하나라도 null 이라면 원래는 토큰이 유효한지 검증로직도 들어가야 하는데 현재는 패스
-    if (refreshToken == null || accessToken == null) {
-      //페이지 제거후 이동 처리하는것!
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => LoginScreen()), (route) => false);
-    } else {
+    final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY); //1일
+    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
+
+    // ID:비밀번호
+    final dio = Dio();
+    try {
+      //refreshToken 이 만료가 됬다면 에러를 던지게 되고 그럴땐 에러를 던져서 catch에서 잡아냄
+      final response = await dio.post(
+        'http://$ip/auth/token',
+        options: Options(
+          headers: {
+            'authorization': 'Bearer $refreshToken',
+          },
+        ),
+      );
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => RootTab()), (route) => false);
+    } catch (e) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => LoginScreen()), (route) => false);
     }
   }
 
