@@ -37,32 +37,35 @@ class RestaurantScreen extends StatelessWidget {
               return ListView.separated(
                 itemBuilder: (con, index) {
                   final item = snapshot.data![index];
+                  final pItem = RestaurantModel.fromJson(Json: item);
                   //parsed
-                  final pItem = RestaurantModel(
-                    id: item['id'],
-                    name: item['name'],
-                    thumbUrl: 'http://$ip${item['thumbUrl']}',
-                    tags: List<String>.from(item['tags']),
-                    priceRange: RestaurantPriceRange.values
-                        .firstWhere(((e) => e.name == item['priceRange'])),
-                    ratings: item['ratings'],
-                    ratingsCount: item['ratingsCount'],
-                    deliveryTime: item['deliveryTime'],
-                    deliveryFee: item['deliveryFee'],
-                  );
-                  return RestaurantCard(
-                    image: Image.network(pItem.thumbUrl, fit: BoxFit.cover),
-                    // image: Image.asset(
-                    //   'asset/img/food/ddeok_bok_gi.jpg',
-                    //   fit: BoxFit.cover,
-                    // ),
-                    name: pItem.name,
-                    tags: pItem.tags,
-                    ratings: pItem.ratings,
-                    ratingsCount: pItem.ratingsCount,
-                    deliveryTime: pItem.deliveryTime,
-                    deliveryFee: pItem.deliveryFee,
-                  );
+                  // final pItem = RestaurantModel(
+                  //   id: item['id'],
+                  //   name: item['name'],
+                  //   thumbUrl: 'http://$ip${item['thumbUrl']}',
+                  //   tags: List<String>.from(item['tags']),
+                  //   priceRange: RestaurantPriceRange.values
+                  //       .firstWhere(((e) => e.name == item['priceRange'])),
+                  //   ratings: item['ratings'],
+                  //   ratingsCount: item['ratingsCount'],
+                  //   deliveryTime: item['deliveryTime'],
+                  //   deliveryFee: item['deliveryFee'],
+                  // );
+                  // return RestaurantCard(
+                  //   image: Image.network(pItem.thumbUrl, fit: BoxFit.cover),
+                  //   // image: Image.asset(
+                  //   //   'asset/img/food/ddeok_bok_gi.jpg',
+                  //   //   fit: BoxFit.cover,
+                  //   // ),
+                  //   name: pItem.name,
+                  //   tags: pItem.tags,
+                  //   ratings: pItem.ratings,
+                  //   ratingsCount: pItem.ratingsCount,
+                  //   deliveryTime: pItem.deliveryTime,
+                  //   deliveryFee: pItem.deliveryFee,
+                  // );
+                  //factory 주운내 편함 ㄹㅇ 한곳에서 변경하면 모든 로직이 변경될 수 있따.!
+                  return RestaurantCard.fromModel(model: pItem);
                 },
                 separatorBuilder: (_, index) {
                   return SizedBox(
