@@ -17,7 +17,8 @@ class RestaurantCard extends StatelessWidget {
   final int deliveryFee;
   //평균 평점
   final double ratings;
-
+  //상세 페이지 여부
+  final bool isDetail;
   RestaurantCard({
     super.key,
     required this.image,
@@ -27,6 +28,7 @@ class RestaurantCard extends StatelessWidget {
     required this.deliveryTime,
     required this.deliveryFee,
     required this.ratings,
+    this.isDetail = false,
   });
   factory RestaurantCard.fromModel({required RestaurantModel model}) {
     return RestaurantCard(
