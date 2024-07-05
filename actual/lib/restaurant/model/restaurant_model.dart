@@ -29,7 +29,7 @@ class RestaurantModel {
   final int ratingsCount;
   final int deliveryTime;
   final int deliveryFee;
-
+  final String? detail;
   RestaurantModel({
     required this.id,
     required this.name,
@@ -40,6 +40,7 @@ class RestaurantModel {
     required this.ratingsCount,
     required this.deliveryTime,
     required this.deliveryFee,
+    this.detail,
   });
   //좀더 편하게 사용하기 위한 생성자 !!
   factory RestaurantModel.fromJson({required Map<String, dynamic> Json}) {
@@ -54,6 +55,7 @@ class RestaurantModel {
       ratingsCount: Json['ratingsCount'],
       deliveryTime: Json['deliveryTime'],
       deliveryFee: Json['deliveryFee'],
+      detail: Json['detail'],
     );
   }
 }
