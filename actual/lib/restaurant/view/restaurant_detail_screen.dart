@@ -39,7 +39,10 @@ class RestaurantDetailScreen extends StatelessWidget {
                   model: pItem,
                   isDetail: true,
                 ),
-                ProductCard(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ProductCard(),
+                ),
               ],
             );
           }),

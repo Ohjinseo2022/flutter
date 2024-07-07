@@ -6,7 +6,7 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //IntrinsicHeight 하위 위젯들의  높이를 차지할 수 있는 높이의 최대 치로 조정
+    //IntrinsicHeight 하위 위젯들의  높이를 차지할 수 있는 높이의 최대 치로 조정IntrinsicWidth 이거도 있음 응용 가능할듯
     return IntrinsicHeight(
       child: Row(
         children: [
@@ -24,36 +24,36 @@ class ProductCard extends StatelessWidget {
             width: 16.0,
           ),
           Expanded(
-            child: Container(
-              color: Colors.red,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '떡볶이',
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '떡볶이',
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w500,
                   ),
-                  Text(
-                    '전통 떡볶이의 정성!\n맛있습니다!',
-                    style: TextStyle(
-                      color: BODY_TEXXT_COLOR,
-                      fontSize: 14.0,
-                    ),
+                ),
+                Text(
+                  '전통 떡볶이의 정성!\n맛있습니다!',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: BODY_TEXXT_COLOR,
+                    fontSize: 14.0,
                   ),
-                  Text(
-                    '₩10000',
-                    style: TextStyle(
-                      color: PRIMARY_COLOR,
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )
-                ],
-              ),
+                ),
+                Text(
+                  '₩10000',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: PRIMARY_COLOR,
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                )
+              ],
             ),
           )
         ],
