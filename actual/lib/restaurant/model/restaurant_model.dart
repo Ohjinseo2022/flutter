@@ -30,32 +30,30 @@ class RestaurantModel {
   final int deliveryTime;
   final int deliveryFee;
   final String? detail;
-  RestaurantModel({
-    required this.id,
-    required this.name,
-    required this.thumbUrl,
-    required this.tags,
-    required this.priceRange,
-    required this.ratings,
-    required this.ratingsCount,
-    required this.deliveryTime,
-    required this.deliveryFee,
-    this.detail,
-  });
+  RestaurantModel(
+      {required this.id,
+      required this.name,
+      required this.thumbUrl,
+      required this.tags,
+      required this.priceRange,
+      required this.ratings,
+      required this.ratingsCount,
+      required this.deliveryTime,
+      required this.deliveryFee,
+      this.detail});
   //좀더 편하게 사용하기 위한 생성자 !!
-  factory RestaurantModel.fromJson({required Map<String, dynamic> Json}) {
+  factory RestaurantModel.fromJson({required Map<String, dynamic> json}) {
     return RestaurantModel(
-      id: Json['id'],
-      name: Json['name'],
-      thumbUrl: 'http://$ip${Json['thumbUrl']}',
-      tags: List<String>.from(Json['tags']),
+      id: json['id'],
+      name: json['name'],
+      thumbUrl: 'http://$ip${json['thumbUrl']}',
+      tags: List<String>.from(json['tags']),
       priceRange: RestaurantPriceRange.values
-          .firstWhere(((e) => e.name == Json['priceRange'])),
-      ratings: Json['ratings'],
-      ratingsCount: Json['ratingsCount'],
-      deliveryTime: Json['deliveryTime'],
-      deliveryFee: Json['deliveryFee'],
-      detail: Json['detail'],
+          .firstWhere(((e) => e.name == json['priceRange'])),
+      ratings: json['ratings'],
+      ratingsCount: json['ratingsCount'],
+      deliveryTime: json['deliveryTime'],
+      deliveryFee: json['deliveryFee'],
     );
   }
 }

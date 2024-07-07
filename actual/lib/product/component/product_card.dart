@@ -1,9 +1,33 @@
 import 'package:actual/common/const/colors.dart';
+import 'package:actual/restaurant/model/restaurant_detail_model.dart';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
-
+  final Image image;
+  final String name;
+  final String detail;
+  final int price;
+  ProductCard(
+      {super.key,
+      required this.image,
+      required this.name,
+      required this.detail,
+      required this.price});
+  factory ProductCard.fromModel({required RestaurantProductModel model}) {
+    return ProductCard(
+      image: Image.network(model.imgUrl,
+          width: 110, height: 110, fit: BoxFit.cover),
+      name: model.name,
+      detail: model.detail,
+      price: model.price,
+    );
+  }
+  // Image.asset(
+  // 'asset/img/food/ddeok_bok_gi.jpg',
+  // width: 110,
+  // height: 110,
+  // fit: BoxFit.cover,
+  // ),
   @override
   Widget build(BuildContext context) {
     //IntrinsicHeight 하위 위젯들의  높이를 차지할 수 있는 높이의 최대 치로 조정IntrinsicWidth 이거도 있음 응용 가능할듯
@@ -12,12 +36,7 @@ class ProductCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              'asset/img/food/ddeok_bok_gi.jpg',
-              width: 110,
-              height: 110,
-              fit: BoxFit.cover,
-            ),
+            child: image,
           ),
           //나머지 공간 전체차지
           const SizedBox(
@@ -29,14 +48,14 @@ class ProductCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '떡볶이',
+                  name,
                   style: TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  '전통 떡볶이의 정성!\n맛있습니다!',
+                  detail,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   style: TextStyle(
@@ -45,7 +64,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '₩10000',
+                  '$price',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: PRIMARY_COLOR,
