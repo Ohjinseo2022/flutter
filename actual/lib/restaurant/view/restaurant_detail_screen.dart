@@ -1,5 +1,6 @@
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/layout/default_layout.dart';
+import 'package:actual/product/component/product_card.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class RestaurantDetailScreen extends StatelessWidget {
                   model: pItem,
                   isDetail: true,
                 ),
+                ProductCard(),
               ],
             );
           }),
