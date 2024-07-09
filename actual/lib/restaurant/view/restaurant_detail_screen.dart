@@ -3,6 +3,7 @@ import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/product/component/product_card.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
 import 'package:actual/restaurant/model/restaurant_detail_model.dart';
+import 'package:actual/restaurant/repository/restaurant_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
@@ -12,25 +13,34 @@ class RestaurantDetailScreen extends StatelessWidget {
   final String title;
   RestaurantDetailScreen({super.key, required this.id, required this.title});
 
-  Future<Map<String, dynamic>> detailRestaurant() async {
+  Future<RestaurantDetailModel> detailRestaurant() async {
     final dio = Dio();
-    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
-    final response = await dio.get(
-      'http://$ip/restaurant/$id',
-      options: Options(
-        headers: {'authorization': 'Bearer $accessToken'},
-      ),
-    );
-    return response.data;
+
+    final repository =
+        RestaurantRepository(dio, baseUrl: "http://$ip/restaurant");
+    return repository.getRestaurantDetail(id: id);
+    // final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
+    // final response = await dio.get(
+    //   'http://$ip/restaurant/$id',
+    //   options: Options(
+    //     headers: {'authorization': 'Bearer $accessToken'},
+    //   ),
+    // );
+    // return response.data;
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultLayout(
       title: title,
-      child: FutureBuilder<Map<String, dynamic>>(
+      child: FutureBuilder<RestaurantDetailModel>(
           future: detailRestaurant(),
-          builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+          builder: (context, AsyncSnapshot<RestaurantDetailModel> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
             }
@@ -38,12 +48,12 @@ class RestaurantDetailScreen extends StatelessWidget {
               return Center(child: CircularProgressIndicator());
             }
             print(snapshot.data);
-            final pItem = RestaurantDetailModel.fromJson(snapshot.data!);
+            // final pItem = RestaurantDetailModel.fromJson(snapshot.data!);
             return CustomScrollView(
               slivers: [
-                renderTop(model: pItem),
+                renderTop(model: snapshot.data!),
                 renderLabel(),
-                renderProducts(products: pItem.products),
+                renderProducts(products: snapshot.data!.products),
               ],
             );
 
