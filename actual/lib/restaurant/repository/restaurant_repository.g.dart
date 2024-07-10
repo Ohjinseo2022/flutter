@@ -23,10 +23,7 @@ class _RestaurantRepository implements RestaurantRepository {
       {required String id}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{
-      r'authorization':
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RAY29kZWZhY3RvcnkuYWkiLCJzdWIiOiJmNTViMzJkMi00ZDY4LTRjMWUtYTNjYS1kYTlkN2QwZDkyZTUiLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzIwNTI3OTM0LCJleHAiOjE3MjA1MjgyMzR9.1Nd7AJOo72v2jUmvtFihCRi6FdlFjidcl2rlnGmTQFE'
-    };
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
@@ -78,11 +75,5 @@ class _RestaurantRepository implements RestaurantRepository {
     }
 
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
-  }
-
-  @override
-  paginate() {
-    // TODO: implement paginate
-    throw UnimplementedError();
   }
 }
