@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:store_riverpod/layout/default_layout.dart';
+import 'package:store_study/layout/default_layout.dart';
 
 class StateProviderScreen extends StatelessWidget {
   const StateProviderScreen({super.key});
