@@ -32,7 +32,7 @@ class StateProviderScreen extends ConsumerWidget {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (_) => _NextScreen()));
                 },
-                child: Text('_NextScreen')),
+                child: Text('NextScreen')),
           ],
         ),
       ),
