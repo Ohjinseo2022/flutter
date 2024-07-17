@@ -62,7 +62,7 @@ class _NextScreen extends ConsumerWidget {
                         (state) => state + 1,
                       );
                 },
-                child: Text('up'))
+                child: Text('UP'))
           ],
         ),
       ),
