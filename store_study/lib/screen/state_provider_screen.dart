@@ -9,6 +9,7 @@ class StateProviderScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    //값 변화를 계속 인식하고 있음
     final provider = ref.watch(numberProvider);
     return DefaultLayout(
       title: "StateProviderScreen",
@@ -26,7 +27,13 @@ class StateProviderScreen extends ConsumerWidget {
                         (state) => state + 1,
                       );
                 },
-                child: Text('up')),
+                child: Text('UP')),
+            ElevatedButton(
+                onPressed: () {
+                  ref.read(numberProvider.notifier).state =
+                      ref.read(numberProvider.notifier).state - 1;
+                },
+                child: Text('DOWN')),
             ElevatedButton(
                 onPressed: () {
                   Navigator.of(context)
