@@ -9,10 +9,41 @@ class CodeGenerationScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state1 = ref.watch(gStateProvider);
+    final state2 = ref.watch(gStateFutureProvider);
+    final state3 = ref.watch(gStateFuture2Provider);
+    final state4 = ref.watch(gStateMultiplyProvider(number1: 10, number2: 20));
     return DefaultLayout(
         title: "CodeGenerationScreen",
         body: Column(
-          children: [Text('State1 : $state1')],
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('State1 : $state1'),
+            state2.when(
+              data: (data) {
+                return Text(
+                  "State2 : $data",
+                  textAlign: TextAlign.center,
+                );
+              },
+              error: (err, stack) {
+                return Text(err.toString());
+              },
+              loading: () => Center(child: CircularProgressIndicator()),
+            ),
+            state3.when(
+              data: (data) {
+                return Text(
+                  "State3 : $data",
+                  textAlign: TextAlign.center,
+                );
+              },
+              error: (err, stack) {
+                return Text(err.toString());
+              },
+              loading: () => Center(child: CircularProgressIndicator()),
+            ),
+            Text('State4 : $state4'),
+          ],
         ));
   }
 }
