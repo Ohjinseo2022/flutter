@@ -8,11 +8,12 @@ class CodeGenerationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    print('build');
     final state1 = ref.watch(gStateProvider);
     final state2 = ref.watch(gStateFutureProvider);
     final state3 = ref.watch(gStateFuture2Provider);
     final state4 = ref.watch(gStateMultiplyProvider(number1: 10, number2: 20));
-    final state5 = ref.watch(gStateNotifierProvider);
+
     return DefaultLayout(
         title: "CodeGenerationScreen",
         body: Column(
@@ -44,7 +45,19 @@ class CodeGenerationScreen extends ConsumerWidget {
               loading: () => Center(child: CircularProgressIndicator()),
             ),
             Text('State4 : $state4'),
-            Text('State5 : $state5'),
+            // 필요한 영역만 재빌드 처리 해주기 위함 !
+            Consumer(
+              builder: (context, ref, child) {
+                print('builder build');
+                final state5 = ref.watch(gStateNotifierProvider);
+                return Row(
+                  children: [Text('State5 : $state5'), child!],
+                );
+              },
+              //builder 에 child 파라미터 추출가능
+              //재랜더링 할때 퍼포먼스(자원)가 많이드는 위엣은 별도로 빼서 state과 연관된 친구만 재랜더링 가능
+              child: Text('hello'),
+            ),
             Row(
               children: [
                 ElevatedButton(
@@ -68,5 +81,15 @@ class CodeGenerationScreen extends ConsumerWidget {
                 child: Text('Invalidate')),
           ],
         ));
+  }
+}
+
+class _StateFiveWidget extends ConsumerWidget {
+  const _StateFiveWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state5 = ref.watch(gStateNotifierProvider);
+    return Text('State5 : $state5');
   }
 }
