@@ -5,24 +5,26 @@ import 'package:actual/common/component/custom_text_form_field.dart';
 import 'package:actual/common/const/colors.dart';
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/layout/default_layout.dart';
+import 'package:actual/common/secure_storage/secure_storage.dart';
 import 'package:actual/common/view/root_tab.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   String userName = '';
   String password = '';
   @override
   Widget build(BuildContext context) {
-    final storage = FlutterSecureStorage();
+    // final storage = FlutterSecureStorage();
     final dio = Dio();
 
     return DefaultLayout(
@@ -85,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                     final refreshToken = response.data['refreshToken'];
                     final accessToken = response.data['accessToken'];
+                    final storage = ref.read(secureStorageProvider);
                     // 1. 토큰이 유효한지 체크한다
                     // 2. 토크인 유효하다면 로그인페이지는 패스
                     await storage.write(

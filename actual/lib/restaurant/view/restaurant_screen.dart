@@ -6,16 +6,17 @@ import 'package:actual/restaurant/repository/restaurant_repository.dart';
 import 'package:actual/restaurant/view/restaurant_detail_screen.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends StatelessWidget {
+class RestaurantScreen extends ConsumerWidget {
   const RestaurantScreen({super.key});
 
-  Future<List<RestaurantModel>> paginateRestaurant() async {
-    final dio = Dio();
-
-    dio.interceptors.add(CustomInterceptor(storage: storage));
-
-    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
+  Future<List<RestaurantModel>> paginateRestaurant(WidgetRef ref) async {
+    // final dio = Dio();
+    //
+    // dio.interceptors.add(CustomInterceptor(storage: storage));
+    final dio = ref.watch(dioProvider);
+    // final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
     // final response = await dio.get('http://$ip/restaurant',
     //     options: Options(headers: {'authorization': 'Bearer $accessToken'}));
     final response =
@@ -26,13 +27,13 @@ class RestaurantScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: FutureBuilder<List<RestaurantModel>>(
-            future: paginateRestaurant(),
+            future: paginateRestaurant(ref),
             builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
