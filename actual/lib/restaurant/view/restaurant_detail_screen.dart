@@ -20,10 +20,14 @@ class RestaurantDetailScreen extends ConsumerWidget {
     // dio.interceptors.add(
     //   CustomInterceptor(storage: storage),
     // );
-    final dio = ref.watch(dioProvider);
-    final repository =
-        RestaurantRepository(dio, baseUrl: "http://$ip/restaurant");
-    return repository.getRestaurantDetail(id: id);
+    // UI 관련 로직은 UI 관련된 것 만 있는게 베스트
+    // final dio = ref.watch(dioProvider);
+    // final repository =
+    //     RestaurantRepository(dio, baseUrl: "http://$ip/restaurant");
+    // return repository.getRestaurantDetail(id: id);
+    //이걸 바로 future 에 넣어도 무방하다
+    return ref.watch(restaurantRepositoryProvider).getRestaurantDetail(id: id);
+
     // final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
     // final response = await dio.get(
     //   'http://$ip/restaurant/$id',
@@ -39,7 +43,9 @@ class RestaurantDetailScreen extends ConsumerWidget {
     return DefaultLayout(
       title: title,
       child: FutureBuilder<RestaurantDetailModel>(
-          future: detailRestaurant(ref),
+          future: ref
+              .watch(restaurantRepositoryProvider)
+              .getRestaurantDetail(id: id),
           builder: (context, AsyncSnapshot<RestaurantDetailModel> snapshot) {
             if (snapshot.hasError) {
               return Center(

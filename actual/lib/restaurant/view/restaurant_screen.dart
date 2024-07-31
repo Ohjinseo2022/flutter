@@ -1,5 +1,6 @@
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/dio/dio.dart';
+import 'package:actual/common/model/cursor_pagination_model.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:actual/restaurant/repository/restaurant_repository.dart';
@@ -32,9 +33,10 @@ class RestaurantScreen extends ConsumerWidget {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: FutureBuilder<List<RestaurantModel>>(
-            future: paginateRestaurant(ref),
-            builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
+          child: FutureBuilder<CursorPagination<RestaurantModel>>(
+            future: ref.watch(restaurantRepositoryProvider).paginate(),
+            builder: (context,
+                AsyncSnapshot<CursorPagination<RestaurantModel>> snapshot) {
               if (!snapshot.hasData) {
                 return const Center(child: CircularProgressIndicator());
               }
@@ -47,7 +49,7 @@ class RestaurantScreen extends ConsumerWidget {
               print(snapshot.stackTrace);
               return ListView.separated(
                 itemBuilder: (con, index) {
-                  final pItem = snapshot.data![index];
+                  final pItem = snapshot.data!.data[index];
                   // final pItem = RestaurantModel.fromJson(item);
                   //parsed
                   // final pItem = RestaurantModel(
@@ -92,7 +94,7 @@ class RestaurantScreen extends ConsumerWidget {
                     height: 16,
                   );
                 },
-                itemCount: snapshot.data!.length,
+                itemCount: snapshot.data!.data.length,
               );
             },
           ),
