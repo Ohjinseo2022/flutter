@@ -14,7 +14,7 @@ class RestaurantDetailScreen extends ConsumerWidget {
   final String id;
   final String title;
   RestaurantDetailScreen({super.key, required this.id, required this.title});
-
+  //아예 초창기 로직
   Future<RestaurantDetailModel> detailRestaurant(WidgetRef ref) async {
     // final dio = Dio();
     // dio.interceptors.add(
