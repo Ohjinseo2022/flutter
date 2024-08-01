@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="riverpod 이름 중복발생.. .새로운 프로젝트 재생성" />
+    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="레스토랑 페이지 Provider 형태로 변경" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,13 +82,22 @@
       <option name="project" value="LOCAL" />
       <updated>1720959740822</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="레스토랑 페이지 Provider 형태로 변경">
+      <option name="closed" value="true" />
+      <created>1722431606948</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1722431606948</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="플러터 상태관리 패키지 사용방법 프로젝트 생성" />
     <MESSAGE value="디렉토리 명 변경" />
     <MESSAGE value="riverpod 이름 중복발생.. .새로운 프로젝트 재생성" />
-    <option name="LAST_COMMIT_MESSAGE" value="riverpod 이름 중복발생.. .새로운 프로젝트 재생성" />
+    <MESSAGE value="레스토랑 페이지 Provider 형태로 변경" />
+    <option name="LAST_COMMIT_MESSAGE" value="레스토랑 페이지 Provider 형태로 변경" />
   </component>
 </project>
