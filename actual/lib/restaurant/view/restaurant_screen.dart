@@ -10,9 +10,14 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantScreen extends ConsumerWidget {
+class RestaurantScreen extends ConsumerStatefulWidget {
   const RestaurantScreen({super.key});
 
+  @override
+  ConsumerState<RestaurantScreen> createState() => _RestaurantScreenState();
+}
+
+class _RestaurantScreenState extends ConsumerState<RestaurantScreen> {
   Future<List<RestaurantModel>> paginateRestaurant(WidgetRef ref) async {
     // final dio = Dio();
     //
@@ -28,23 +33,65 @@ class RestaurantScreen extends ConsumerWidget {
     return response.data;
   }
 
+  final ScrollController controller = ScrollController();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.addListener(scrollListener);
+  }
+
+  void scrollListener() {
+    //현재 위치가
+    //최대 길이보다 조금 덜되는 위치까지 왔다면
+    //새로운 데이터를 추가요청
+    if (controller.offset > controller.position.maxScrollExtent - 300) {
+      ref.read(restaurantProvider.notifier).paginate(
+            fetchMore: true,
+          );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     //최초 1회만 데이터 텅신이 이루어지게 만든것 그후엔 속도가 빠르다
     final data = ref.watch(restaurantProvider);
-    //요렇게 만하면 에러 났을때 처리가 어려움!
-    if (data.isEmpty) {
-      //data.length == 0
+    // 진짜 초기 로딩 상태,.
+    if (data is CursorPaginationLoading) {
+      //data.length == 0 확인할 필요가 없음!
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
+    //에러
+    if (data is CursorPaginationError) {
+      return Center(
+        child: Text(data.message),
+      );
+    }
+    //CursorPagination
+    //CursorPaginationFetchingMore
+    //CursorPaginationRefetching
+    final cp = data as CursorPagination;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: ListView.separated(
-        itemCount: data.length,
+        controller: controller,
+        itemCount: cp.data.length + 1,
         itemBuilder: (con, index) {
-          final pItem = data[index];
+          if (index == cp.data.length) {
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Center(
+                child: data is CursorPaginationFetchingMore
+                    ? CircularProgressIndicator()
+                    : Text('마지막 데이터 입니다 ㅜㅜ'),
+              ),
+            );
+          }
+          final pItem = cp.data[index];
           return GestureDetector(
               onTap: () {
                 Navigator.of(context).push(

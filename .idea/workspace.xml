@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="레스토랑 페이지 Provider 형태로 변경" />
+    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,7 +90,23 @@
       <option name="project" value="LOCAL" />
       <updated>1722431606948</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법">
+      <option name="closed" value="true" />
+      <created>1722521244964</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1722521244964</updated>
+    </task>
+    <task id="LOCAL-00006" summary="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법">
+      <option name="closed" value="true" />
+      <created>1722524516970</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1722524516970</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -98,6 +114,7 @@
     <MESSAGE value="디렉토리 명 변경" />
     <MESSAGE value="riverpod 이름 중복발생.. .새로운 프로젝트 재생성" />
     <MESSAGE value="레스토랑 페이지 Provider 형태로 변경" />
-    <option name="LAST_COMMIT_MESSAGE" value="레스토랑 페이지 Provider 형태로 변경" />
+    <MESSAGE value="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
+    <option name="LAST_COMMIT_MESSAGE" value="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
   </component>
 </project>

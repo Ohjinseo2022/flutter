@@ -1,6 +1,7 @@
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/dio/dio.dart';
 import 'package:actual/common/model/cursor_pagination_model.dart';
+import 'package:actual/common/model/pagination_params.dart';
 import 'package:actual/restaurant/model/restaurant_detail_model.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:dio/dio.dart' hide Headers;
@@ -22,12 +23,16 @@ abstract class RestaurantRepository {
   // http://$ip/reatauant
   factory RestaurantRepository(Dio dio, {String baseUrl}) =
       _RestaurantRepository; //body 생성
+
 // http://$ip/reatauant
   @GET('/')
   @Headers({
     'accessToken': 'true',
   })
-  Future<CursorPagination<RestaurantModel>> paginate();
+  Future<CursorPagination<RestaurantModel>> paginate({
+    @Queries() PaginationParams? paginationParams = const PaginationParams(),
+  });
+
 // http://$ip/reatauant/:id
   @GET('/{id}')
   @Headers({
