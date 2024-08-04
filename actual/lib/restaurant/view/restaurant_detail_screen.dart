@@ -4,16 +4,25 @@ import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/product/component/product_card.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
 import 'package:actual/restaurant/model/restaurant_detail_model.dart';
+import 'package:actual/restaurant/provider/restaurant_provider.dart';
 import 'package:actual/restaurant/repository/restaurant_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RestaurantDetailScreen extends ConsumerWidget {
+class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String id;
   final String title;
   RestaurantDetailScreen({super.key, required this.id, required this.title});
+
+  @override
+  ConsumerState<RestaurantDetailScreen> createState() =>
+      _RestaurantDetailScreenState();
+}
+
+class _RestaurantDetailScreenState
+    extends ConsumerState<RestaurantDetailScreen> {
   //아예 초창기 로직
   Future<RestaurantDetailModel> detailRestaurant(WidgetRef ref) async {
     // final dio = Dio();
@@ -26,7 +35,9 @@ class RestaurantDetailScreen extends ConsumerWidget {
     //     RestaurantRepository(dio, baseUrl: "http://$ip/restaurant");
     // return repository.getRestaurantDetail(id: id);
     //이걸 바로 future 에 넣어도 무방하다
-    return ref.watch(restaurantRepositoryProvider).getRestaurantDetail(id: id);
+    return ref
+        .watch(restaurantRepositoryProvider)
+        .getRestaurantDetail(id: widget.id);
 
     // final accessToken = await storage.read(key: ACCESS_TOKEN_KEY); //5분
     // final response = await dio.get(
@@ -39,52 +50,74 @@ class RestaurantDetailScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultLayout(
-      title: title,
-      child: FutureBuilder<RestaurantDetailModel>(
-          future: ref
-              .watch(restaurantRepositoryProvider)
-              .getRestaurantDetail(id: id),
-          builder: (context, AsyncSnapshot<RestaurantDetailModel> snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
-            }
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            }
-            print(snapshot.data);
-            // final pItem = RestaurantDetailModel.fromJson(snapshot.data!);
-            return CustomScrollView(
-              slivers: [
-                renderTop(model: snapshot.data!),
-                renderLabel(),
-                renderProducts(products: snapshot.data!.products),
-              ],
-            );
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
+  }
 
-            //   Column(
-            //   children: [
-            //     RestaurantCard.fromModel(
-            //       model: pItem,
-            //       isDetail: true,
-            //     ),
-            //     Padding(
-            //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            //       child: ProductCard(),
-            //     ),
-            //   ],
-            // );
-          }),
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(restaurantDetailProvider(widget.id));
+    if (state == null) {
+      return DefaultLayout(
+          child: Center(
+        child: CircularProgressIndicator(),
+      ));
+    }
+    return DefaultLayout(
+      title: widget.title,
+      child: CustomScrollView(
+        slivers: [
+          renderTop(model: state),
+          if (state is RestaurantDetailModel) renderLabel(),
+          if (state is RestaurantDetailModel)
+            renderProducts(products: state.products),
+        ],
+      ),
+      // FutureBuilder<RestaurantDetailModel>(
+      //     future: ref
+      //         .watch(restaurantRepositoryProvider)
+      //         .getRestaurantDetail(id: id),
+      //     builder: (context, AsyncSnapshot<RestaurantDetailModel> snapshot) {
+      //       if (snapshot.hasError) {
+      //         return Center(
+      //           child: Text(snapshot.error.toString()),
+      //         );
+      //       }
+      //       if (!snapshot.hasData) {
+      //         return Center(child: CircularProgressIndicator());
+      //       }
+      //       if (snapshot.connectionState == ConnectionState.waiting) {
+      //         return Center(child: CircularProgressIndicator());
+      //       }
+      //       print(snapshot.data);
+      //       // final pItem = RestaurantDetailModel.fromJson(snapshot.data!);
+      //       return CustomScrollView(
+      //         slivers: [
+      //           renderTop(model: snapshot.data!),
+      //           renderLabel(),
+      //           renderProducts(products: snapshot.data!.products),
+      //         ],
+      //       );
+      //
+      //       //   Column(
+      //       //   children: [
+      //       //     RestaurantCard.fromModel(
+      //       //       model: pItem,
+      //       //       isDetail: true,
+      //       //     ),
+      //       //     Padding(
+      //       //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      //       //       child: ProductCard(),
+      //       //     ),
+      //       //   ],
+      //       // );
+      //     }),
     );
   }
 
-  SliverToBoxAdapter renderTop({required model}) {
+  SliverToBoxAdapter renderTop({required RestaurantModel model}) {
     return SliverToBoxAdapter(
       child: RestaurantCard.fromModel(
         model: model,

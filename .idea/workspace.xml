@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
+    <list default="true" id="65762980-82d4-4cbc-83e3-d07c123ad396" name="Changes" comment="OOP 를 활용하여 데이터의 상태관리 - api 호출을 위한 조건 분기처리">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +108,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722524516970</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="OOP 를 활용하여 데이터의 상태관리 - api 호출을 위한 조건 분기처리">
+      <option name="closed" value="true" />
+      <created>1722691913895</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1722691913895</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -115,6 +125,7 @@
     <MESSAGE value="riverpod 이름 중복발생.. .새로운 프로젝트 재생성" />
     <MESSAGE value="레스토랑 페이지 Provider 형태로 변경" />
     <MESSAGE value="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
-    <option name="LAST_COMMIT_MESSAGE" value="레스토랑 api 호출 자체를 provider로 분리 캐싱이 필요한 데이터 FutureBuilder를 의존하지 않고 직접관리 하는 방법" />
+    <MESSAGE value="OOP 를 활용하여 데이터의 상태관리 - api 호출을 위한 조건 분기처리" />
+    <option name="LAST_COMMIT_MESSAGE" value="OOP 를 활용하여 데이터의 상태관리 - api 호출을 위한 조건 분기처리" />
   </component>
 </project>
