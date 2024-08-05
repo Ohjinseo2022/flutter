@@ -120,6 +120,7 @@ class _RestaurantDetailScreenState
     );
   }
 
+//
   SliverPadding renderLoading() {
     return SliverPadding(
         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
