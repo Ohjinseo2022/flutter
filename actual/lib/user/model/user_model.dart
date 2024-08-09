@@ -13,6 +13,8 @@ class UserModel {
   final String imageUrl;
 
   ///
+  ///
+  ///
   UserModel({
     required this.id,
     required this.username,
