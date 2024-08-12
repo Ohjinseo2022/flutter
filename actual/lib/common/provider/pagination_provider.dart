@@ -10,7 +10,10 @@ class PaginationProvider<T extends IModelWithId,
   final U repository;
 
   PaginationProvider({required this.repository})
-      : super(CursorPaginationLoading());
+      : super(CursorPaginationLoading()) {
+    //RestaurantStateNotifier 이 생성되는 순간 paginate() 가 실행된다.
+    paginate();
+  }
 
   Future<void> paginate({
     int fetchCount = 20,
@@ -66,7 +69,9 @@ class PaginationProvider<T extends IModelWithId,
       } else {
         state = response;
       }
-    } catch (e) {
+    } catch (e, stack) {
+      print(e.toString());
+      print(stack);
       state = CursorPaginationError(message: '데이터를 가져오지 못했습니다.');
     }
   }
