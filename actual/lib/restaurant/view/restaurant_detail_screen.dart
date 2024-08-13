@@ -2,6 +2,7 @@ import 'package:actual/common/const/data.dart';
 import 'package:actual/common/dio/dio.dart';
 import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/common/model/cursor_pagination_model.dart';
+import 'package:actual/common/utils/pagination_utils.dart';
 import 'package:actual/product/component/product_card.dart';
 import 'package:actual/rating/component/rating_card.dart';
 import 'package:actual/rating/model/rating_model.dart';
@@ -57,11 +58,23 @@ class _RestaurantDetailScreenState
     // return response.data;
   }
 
+  final ScrollController controller = ScrollController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
+
+    controller.addListener(listener);
+  }
+
+  void listener() {
+    PaginationUtils.paginate(
+      controller: controller,
+      provider: ref.read(
+        restaurantRatingProvider(widget.id).notifier,
+      ),
+    );
   }
 
   @override
@@ -78,6 +91,7 @@ class _RestaurantDetailScreenState
     return DefaultLayout(
       title: widget.title,
       child: CustomScrollView(
+        controller: controller,
         slivers: [
           renderTop(model: state),
           if (state is! RestaurantDetailModel) renderLoading(),
@@ -137,23 +151,23 @@ class _RestaurantDetailScreenState
       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
-            (context, index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: RatingCard.fromModel(
-                    model: models[index],
-                  ),
-                ),
-            childCount: models.length
-            // SliverToBoxAdapter(
-            //   child: RatingCard(
-            //     avatarImage: AssetImage('asset/img/logo/codefactory_logo.png'),
-            //     images: [],
-            //     rating: 4,
-            //     email: 'ojs7572@naver.com',
-            //     content: '맛있나 봅니다',
-            //   ),
-            // )
+          (context, index) => Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: RatingCard.fromModel(
+              model: models[index],
             ),
+          ),
+          childCount: models.length,
+          // SliverToBoxAdapter(
+          //   child: RatingCard(
+          //     avatarImage: AssetImage('asset/img/logo/codefactory_logo.png'),
+          //     images: [],
+          //     rating: 4,
+          //     email: 'ojs7572@naver.com',
+          //     content: '맛있나 봅니다',
+          //   ),
+          // )
+        ),
       ),
     );
   }
