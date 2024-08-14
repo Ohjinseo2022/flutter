@@ -62,6 +62,7 @@ class RatingCard extends StatelessWidget {
   }
 }
 
+//
 class _Header extends StatelessWidget {
   final ImageProvider avatarImage;
   final int rating;
