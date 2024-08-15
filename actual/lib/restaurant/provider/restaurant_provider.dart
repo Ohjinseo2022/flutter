@@ -5,6 +5,7 @@ import 'package:actual/common/provider/pagination_provider.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:actual/restaurant/repository/restaurant_repository.dart';
+import 'package:collection/collection.dart';
 
 final restaurantDetailProvider =
     Provider.family<RestaurantModel?, String>((ref, id) {
@@ -12,7 +13,7 @@ final restaurantDetailProvider =
   if (state is! CursorPagination) {
     return null;
   }
-  return state.data.firstWhere((element) => element.id == id);
+  return state.data.firstWhereOrNull((element) => element.id == id);
 });
 
 final restaurantProvider =
@@ -146,12 +147,26 @@ class RestaurantStateNotifier
     final pState = state as CursorPagination;
 
     final response = await repository.getRestaurantDetail(id: id);
-    // 통신 완료후 id 가 같은 데이터만 RestaurantDetailModel 로 변경됨
-    // RestaurantDetailModel 도 RestaurantModel 을 상속받은 상태기 떄문에 문제가 생기지 않는다.
-    state = pState.copyWith(
-      data: pState.data
-          .map<RestaurantModel>((e) => e.id == id ? response : e)
-          .toList(),
-    );
+
+    // [RestaurantModel(1),RestaurantModel(2),RestaurantModel(3),]
+    // 요청 id : 10
+    // list.where((e)=>e.id == 10) 데이터 x
+    // 데이터가 없을때는 그냥 캐시의 끝에다가 데이터를 추가해버린다.
+    // [RestaurantModel(1),RestaurantModel(2),RestaurantModel(3),RestaurantModel(10)]
+    if (pState.data.where((e) => e.id == id).isEmpty) {
+      state =
+          pState.copyWith(data: <RestaurantModel>[...pState.data, response]);
+    } else {
+      // [RestaurantModel(1),RestaurantModel(2),RestaurantModel(3),]
+      // getDetail(id:2)
+      // 통신 완료후 id 가 같은 데이터만 RestaurantDetailModel 로 변경됨
+      // RestaurantDetailModel 도 RestaurantModel 을 상속받은 상태기 떄문에 문제가 생기지 않는다.
+      // [RestaurantModel(1),RestaurantDetailModel(2),RestaurantModel(3),]
+      state = pState.copyWith(
+        data: pState.data
+            .map<RestaurantModel>((e) => e.id == id ? response : e)
+            .toList(),
+      );
+    }
   }
 }
