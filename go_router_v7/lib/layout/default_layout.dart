@@ -12,6 +12,7 @@ class DefaultLayout extends StatelessWidget {
         title: Text(GoRouterState.of(context).location),
       ),
       body: Padding(
+        ///
         padding: EdgeInsets.all(8.0),
         child: body,
       ),
