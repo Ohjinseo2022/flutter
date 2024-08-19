@@ -4,6 +4,8 @@ import 'package:go_router_v7/screens/2_named_screen.dart';
 import 'package:go_router_v7/screens/3_push_screen.dart';
 import 'package:go_router_v7/screens/4_pop_base_screen.dart';
 import 'package:go_router_v7/screens/5_pop_return_screen.dart';
+import 'package:go_router_v7/screens/6_path_param_screen.dart';
+import 'package:go_router_v7/screens/7_query_parameter_screen.dart';
 import 'package:go_router_v7/screens/root_screen.dart';
 
 // https://blog.codefactory.ai/ -> / -> path
@@ -42,6 +44,23 @@ final router = GoRouter(
               builder: (context, state) => PopReturnScreen(),
             )
           ],
+        ),
+        GoRoute(
+          //파라미터를 받을 수 있음
+          path: 'path_param/:id',
+          // /path_param/123 ->> id 라는 변수로 입력 받을 수 있음
+          builder: (context, state) => PathParamScreen(),
+          routes: [
+            GoRoute(
+              path: ':name',
+              //같은 위젯을 반환해도 독립된 위젝으로 인식함.!
+              builder: (context, state) => PathParamScreen(),
+            )
+          ],
+        ),
+        GoRoute(
+          path: 'query_param',
+          builder: (context, state) => QueryParameterScreen(),
         ),
       ],
     ),

@@ -34,6 +34,18 @@ class RootScreen extends StatelessWidget {
           },
           child: Text('Go_Pop'),
         ),
+        ElevatedButton(
+          onPressed: () {
+            context.go('/path_param/445');
+          },
+          child: Text('Go Path Param'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.go('/query_param');
+          },
+          child: Text('Go Query Parameter'),
+        ),
       ],
     ));
   }
