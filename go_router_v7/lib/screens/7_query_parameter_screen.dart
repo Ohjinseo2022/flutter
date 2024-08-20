@@ -16,6 +16,7 @@ class QueryParameterScreen extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             context.push(
+              // 해당 방식을 사용하면 웹에서 컨트롤하는 방식그대로 사용가능함 !
               Uri(
                 path: '/query_param',
                 queryParameters: {'name': 'ojs', 'age': '33'},
