@@ -6,6 +6,8 @@ import 'package:go_router_v7/screens/4_pop_base_screen.dart';
 import 'package:go_router_v7/screens/5_pop_return_screen.dart';
 import 'package:go_router_v7/screens/6_path_param_screen.dart';
 import 'package:go_router_v7/screens/7_query_parameter_screen.dart';
+import 'package:go_router_v7/screens/8_nested_child_screen.dart';
+import 'package:go_router_v7/screens/8_nested_screen.dart';
 import 'package:go_router_v7/screens/root_screen.dart';
 
 // https://blog.codefactory.ai/ -> / -> path
@@ -62,6 +64,28 @@ final router = GoRouter(
           path: 'query_param',
           builder: (context, state) => QueryParameterScreen(),
         ),
+        //ShellRoute의 builder 는 내부 routes 의 전체를 감싸는 위젯을 만들수 있다.
+        ShellRoute(
+            builder: (context, state, child) {
+              return NestedScreen(child: child);
+            },
+            routes: [
+              GoRoute(
+                path: 'nested/a',
+                builder: (context, state) =>
+                    NestedChildScreen(routeName: '/nested/a'),
+              ),
+              GoRoute(
+                path: 'nested/b',
+                builder: (context, state) =>
+                    NestedChildScreen(routeName: '/nested/b'),
+              ),
+              GoRoute(
+                path: 'nested/c',
+                builder: (context, state) =>
+                    NestedChildScreen(routeName: '/nested/c'),
+              ),
+            ])
       ],
     ),
   ],
