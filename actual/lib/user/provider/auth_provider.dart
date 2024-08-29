@@ -53,6 +53,9 @@ class AuthProvider extends ChangeNotifier {
           builder: (_, state) => LoginScreen(),
         )
       ];
+  void logout() {
+    ref.read(userMeProvider.notifier).logout();
+  }
 
   //SplashScreen
   //앱을 처음 시작했을때

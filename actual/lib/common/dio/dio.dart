@@ -1,5 +1,6 @@
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/secure_storage/secure_storage.dart';
+import 'package:actual/user/provider/auth_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -9,16 +10,15 @@ final dioProvider = Provider<Dio>((ref) {
 
   final storage = ref.watch(secureStorageProvider);
   dio.interceptors.add(
-    CustomInterceptor(
-      storage: storage,
-    ),
+    CustomInterceptor(storage: storage, ref: ref),
   );
   return dio;
 });
 
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
-  CustomInterceptor({required this.storage});
+  final Ref ref;
+  CustomInterceptor({required this.storage, required this.ref});
   //중간에 요청을 가로채서! 핸들링
   // 1) 요청을 보냃때
   @override
@@ -74,7 +74,7 @@ class CustomInterceptor extends Interceptor {
               'authorization': 'Bearer $refreshToken',
             }));
         //토큰 변경 하기
-        final accessToken = res.data('accessToken');
+        final accessToken = res.data['accessToken'];
         final options = err.requestOptions;
 
         options.headers.addAll({'authorization': 'Bearer $accessToken'});
@@ -83,7 +83,15 @@ class CustomInterceptor extends Interceptor {
         final response = await dio.fetch(options);
         return handler.resolve(response);
       } on DioException catch (e) {
+        //circular dependency error
+        // A, B
+        // A -> B 의 친구
+        // B -> A 의 친구
+        // A는 B 의 친구구나
+        // A -> B -> A -> B -> A -> B.......
+        // ump -> dio -> ump -> dio....
         //리프레시 토큰이 유효 하지 않다!
+        ref.read(authProvider.notifier).logout();
         return handler.reject(e);
       }
     }
