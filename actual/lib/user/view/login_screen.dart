@@ -7,6 +7,8 @@ import 'package:actual/common/const/data.dart';
 import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/common/secure_storage/secure_storage.dart';
 import 'package:actual/common/view/root_tab.dart';
+import 'package:actual/user/model/user_model.dart';
+import 'package:actual/user/provider/user_me_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,7 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     // final storage = FlutterSecureStorage();
-    final dio = Dio();
+    final state = ref.watch(userMeProvider);
 
     return DefaultLayout(
       //외부 스크롤시 키보드 사라지게해야함
@@ -73,31 +75,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                       backgroundColor: PRIMARY_COLOR,
                       foregroundColor: Colors.white),
-                  onPressed: () async {
-                    // ID:비밀번호
-                    String rawString = "$userName:$password";
-                    Codec<String, String> stringToBase64 = utf8.fuse(base64);
-                    String token = stringToBase64.encode(rawString);
-                    final response = await dio.post(
-                      'http://$ip/auth/login',
-                      options: Options(
-                        headers: {
-                          'authorization': 'Basic $token',
+                  onPressed: state is UserModelLoading
+                      ? null
+                      : () async {
+                          ref
+                              .read(userMeProvider.notifier)
+                              .login(username: userName, password: password);
+                          // ID:비밀번호
+                          // String rawString = "$userName:$password";
+                          // Codec<String, String> stringToBase64 = utf8.fuse(base64);
+                          // String token = stringToBase64.encode(rawString);
+                          // final response = await dio.post(
+                          //   'http://$ip/auth/login',
+                          //   options: Options(
+                          //     headers: {
+                          //       'authorization': 'Basic $token',
+                          //     },
+                          //   ),
+                          // );
+                          // final refreshToken = response.data['refreshToken'];
+                          // final accessToken = response.data['accessToken'];
+                          // final storage = ref.read(secureStorageProvider);
+                          // // 1. 토큰이 유효한지 체크한다
+                          // // 2. 토크인 유효하다면 로그인페이지는 패스
+                          // await storage.write(
+                          //     key: REFRESH_TOKEN_KEY, value: refreshToken);
+                          // await storage.write(
+                          //     key: ACCESS_TOKEN_KEY, value: accessToken);
+                          // Navigator.of(context)
+                          //     .push(MaterialPageRoute(builder: (_) => RootTab()));
                         },
-                      ),
-                    );
-                    final refreshToken = response.data['refreshToken'];
-                    final accessToken = response.data['accessToken'];
-                    final storage = ref.read(secureStorageProvider);
-                    // 1. 토큰이 유효한지 체크한다
-                    // 2. 토크인 유효하다면 로그인페이지는 패스
-                    await storage.write(
-                        key: REFRESH_TOKEN_KEY, value: refreshToken);
-                    await storage.write(
-                        key: ACCESS_TOKEN_KEY, value: accessToken);
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => RootTab()));
-                  },
                   child: Text("로그인"),
                 ),
                 TextButton(

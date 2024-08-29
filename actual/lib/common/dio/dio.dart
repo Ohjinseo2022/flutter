@@ -55,6 +55,7 @@ class CustomInterceptor extends Interceptor {
      * 토큰을 재발급 받는 시도를하고 토근이 재발급되면
      * 다시 새로운 토큰으로 요청한다.
      * */
+    // await storage.deleteAll();
     print("[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri}");
     final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
     if (refreshToken == null) {
@@ -70,7 +71,7 @@ class CustomInterceptor extends Interceptor {
       try {
         final res = await dio.post('http://$ip/auth/token',
             options: Options(headers: {
-              'authorization': "Bearer $refreshToken",
+              'authorization': 'Bearer $refreshToken',
             }));
         //토큰 변경 하기
         final accessToken = res.data('accessToken');

@@ -21,6 +21,7 @@ import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'RestaurantDetailScreen';
   final String id;
   final String? title;
   RestaurantDetailScreen({super.key, required this.id, this.title});

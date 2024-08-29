@@ -8,7 +8,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final provider = ref.read(authProvider);
   return GoRouter(
     routes: provider.routes,
-    initialLocation: '/splash',
+    // initialLocation: '/splash',
     refreshListenable: provider,
     redirect: (_, state) => provider.redirectLogic(state),
     debugLogDiagnostics: true,
