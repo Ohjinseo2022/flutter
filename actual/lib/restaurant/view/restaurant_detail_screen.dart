@@ -22,8 +22,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String id;
-  final String title;
-  RestaurantDetailScreen({super.key, required this.id, required this.title});
+  final String? title;
+  RestaurantDetailScreen({super.key, required this.id, this.title});
 
   @override
   ConsumerState<RestaurantDetailScreen> createState() =>
