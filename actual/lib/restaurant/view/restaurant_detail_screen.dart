@@ -1,9 +1,11 @@
+import 'package:actual/common/const/colors.dart';
 import 'package:actual/common/const/data.dart';
 import 'package:actual/common/dio/dio.dart';
 import 'package:actual/common/layout/default_layout.dart';
 import 'package:actual/common/model/cursor_pagination_model.dart';
 import 'package:actual/common/utils/pagination_utils.dart';
 import 'package:actual/product/component/product_card.dart';
+import 'package:actual/product/model/product_model.dart';
 import 'package:actual/rating/component/rating_card.dart';
 import 'package:actual/rating/model/rating_model.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
@@ -12,6 +14,7 @@ import 'package:actual/restaurant/provider/restaurant_provider.dart';
 import 'package:actual/restaurant/provider/restaurant_rating_provider.dart';
 import 'package:actual/restaurant/repository/restaurant_rating_repository.dart';
 import 'package:actual/restaurant/repository/restaurant_repository.dart';
+import 'package:actual/user/provider/basket_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +22,7 @@ import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:badges/badges.dart' as badges;
 
 class RestaurantDetailScreen extends ConsumerStatefulWidget {
   static String get routeName => 'RestaurantDetailScreen';
@@ -82,7 +86,7 @@ class _RestaurantDetailScreenState
   Widget build(BuildContext context) {
     final state = ref.watch(restaurantDetailProvider(widget.id));
     final ratingsState = ref.watch(restaurantRatingProvider(widget.id));
-    print(ratingsState);
+    final basket = ref.watch(basketProvider);
     if (state == null) {
       return DefaultLayout(
           child: Center(
@@ -91,6 +95,22 @@ class _RestaurantDetailScreenState
     }
     return DefaultLayout(
       title: widget.title,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: PRIMARY_COLOR,
+        child: badges.Badge(
+          showBadge: basket.isNotEmpty,
+          //fold -> js 에서 reduce 같은 느낌 이라고 보면될듯
+          badgeContent: Text(
+            basket
+                .fold<int>(0, (previous, next) => previous + next.count)
+                .toString(),
+            style: TextStyle(color: PRIMARY_COLOR, fontSize: 10.0),
+          ),
+          badgeStyle: badges.BadgeStyle(badgeColor: Colors.white),
+          child: Icon(Icons.shopping_bag_outlined),
+        ),
+      ),
       child: CustomScrollView(
         controller: controller,
         slivers: [
@@ -98,7 +118,7 @@ class _RestaurantDetailScreenState
           if (state is! RestaurantDetailModel) renderLoading(),
           if (state is RestaurantDetailModel) renderLabel(),
           if (state is RestaurantDetailModel)
-            renderProducts(products: state.products),
+            renderProducts(products: state.products, restaurant: state),
           if (ratingsState is CursorPagination<RatingModel>)
             renderRatings(
               models: ratingsState.data,
@@ -219,16 +239,31 @@ class _RestaurantDetailScreenState
   }
 
   SliverPadding renderProducts(
-      {required List<RestaurantProductModel> products}) {
+      {required RestaurantModel restaurant,
+      required List<RestaurantProductModel> products}) {
     return SliverPadding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: ProductCard.fromRestaurantProductModel(
-                  model: products[index]),
+            final model = products[index];
+            return InkWell(
+              onTap: () {
+                ref.read(basketProvider.notifier).addToBasket(
+                      product: ProductModel(
+                        id: model.id,
+                        name: model.name,
+                        detail: model.detail,
+                        imgUrl: model.imgUrl,
+                        price: model.price,
+                        restaurant: restaurant,
+                      ),
+                    );
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: ProductCard.fromRestaurantProductModel(model: model),
+              ),
             );
           },
           childCount: products.length,
