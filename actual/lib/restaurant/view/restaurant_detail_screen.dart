@@ -14,6 +14,7 @@ import 'package:actual/restaurant/provider/restaurant_provider.dart';
 import 'package:actual/restaurant/provider/restaurant_rating_provider.dart';
 import 'package:actual/restaurant/repository/restaurant_rating_repository.dart';
 import 'package:actual/restaurant/repository/restaurant_repository.dart';
+import 'package:actual/restaurant/view/basket_screen.dart';
 import 'package:actual/user/provider/basket_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_skeleton_ui/flutter_skeleton_ui.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -96,7 +98,9 @@ class _RestaurantDetailScreenState
     return DefaultLayout(
       title: widget.title,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.pushNamed(BasketScreen.routeName);
+        },
         backgroundColor: PRIMARY_COLOR,
         child: badges.Badge(
           showBadge: basket.isNotEmpty,
