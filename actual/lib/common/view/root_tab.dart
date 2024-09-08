@@ -60,7 +60,7 @@ class _RootTabState extends State<RootTab> with SingleTickerProviderStateMixin {
       ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: PRIMARY_COLOR,
-        unselectedItemColor: BODY_TEXXT_COLOR,
+        unselectedItemColor: BODY_TEXT_COLOR,
         selectedFontSize: 10,
         unselectedFontSize: 10,
         //기본 shifting

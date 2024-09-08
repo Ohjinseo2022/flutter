@@ -119,7 +119,7 @@ class _Body extends StatelessWidget {
         Flexible(
           child: Text(
             content,
-            style: TextStyle(color: BODY_TEXXT_COLOR, fontSize: 14.0),
+            style: TextStyle(color: BODY_TEXT_COLOR, fontSize: 14.0),
           ),
         ),
       ],

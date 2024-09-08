@@ -98,7 +98,7 @@ class ProductCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,
                       style: TextStyle(
-                        color: BODY_TEXXT_COLOR,
+                        color: BODY_TEXT_COLOR,
                         fontSize: 14.0,
                       ),
                     ),
@@ -118,13 +118,19 @@ class ProductCard extends ConsumerWidget {
           ),
         ),
         if (onSubtract != null && onAdd != null)
-          _Footer(
-            total: (basket.firstWhere((e) => e.product.id == id).count *
-                    basket.firstWhere((e) => e.product.id == id).product.price)
-                .toString(),
-            count: basket.firstWhere((e) => e.product.id == id).count,
-            onSubtract: onSubtract!,
-            onAdd: onAdd!,
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: _Footer(
+              total: (basket.firstWhere((e) => e.product.id == id).count *
+                      basket
+                          .firstWhere((e) => e.product.id == id)
+                          .product
+                          .price)
+                  .toString(),
+              count: basket.firstWhere((e) => e.product.id == id).count,
+              onSubtract: onSubtract!,
+              onAdd: onAdd!,
+            ),
           )
       ],
     );
@@ -161,12 +167,18 @@ class _Footer extends StatelessWidget {
           children: [
             //
             renderButton(icon: Icons.remove, onTap: onSubtract),
+            SizedBox(
+              width: 8.0,
+            ),
             Text(
               count.toString(),
               style: TextStyle(
                 color: PRIMARY_COLOR,
                 fontWeight: FontWeight.w500,
               ),
+            ),
+            SizedBox(
+              width: 8.0,
             ),
             renderButton(icon: Icons.add, onTap: onAdd),
             //

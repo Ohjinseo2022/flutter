@@ -91,7 +91,7 @@ class RestaurantCard extends StatelessWidget {
               Text(
                 tags.join(" · "),
                 style: TextStyle(
-                  color: BODY_TEXXT_COLOR,
+                  color: BODY_TEXT_COLOR,
                   fontSize: 14.0,
                 ),
               ),
