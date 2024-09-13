@@ -90,33 +90,41 @@ class _PaginationListViewState<T extends IModelWithId>
     final cp = state as CursorPagination<T>;
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: ListView.separated(
-          controller: controller,
-          itemCount: cp.data.length + 1,
-          itemBuilder: (con, index) {
-            if (index == cp.data.length) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Center(
-                  child: cp is CursorPaginationFetchingMore
-                      ? CircularProgressIndicator()
-                      : Text('마지막 데이터 입니다 ㅜㅜ'),
-                ),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            ref.read(widget.provider.notifier).paginate(
+                  forceRefetch: true,
+                );
+          },
+          child: ListView.separated(
+            physics: AlwaysScrollableScrollPhysics(),
+            controller: controller,
+            itemCount: cp.data.length + 1,
+            itemBuilder: (con, index) {
+              if (index == cp.data.length) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 8.0),
+                  child: Center(
+                    child: cp is CursorPaginationFetchingMore
+                        ? CircularProgressIndicator()
+                        : Text('마지막 데이터 입니다 ㅜㅜ'),
+                  ),
+                );
+              }
+              final pItem = cp.data[index];
+              return widget.itemBuilder(
+                context,
+                index,
+                pItem,
               );
-            }
-            final pItem = cp.data[index];
-            return widget.itemBuilder(
-              context,
-              index,
-              pItem,
-            );
-          },
-          separatorBuilder: (_, index) {
-            return const SizedBox(
-              height: 16,
-            );
-          },
+            },
+            separatorBuilder: (_, index) {
+              return const SizedBox(
+                height: 16,
+              );
+            },
+          ),
         ));
   }
 }
