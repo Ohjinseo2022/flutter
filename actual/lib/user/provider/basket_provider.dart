@@ -2,6 +2,7 @@ import 'package:actual/product/model/product_model.dart';
 import 'package:actual/user/model/basket_item_model.dart';
 import 'package:actual/user/model/patch_basket_body.dart';
 import 'package:actual/user/repository/user_me_repository.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:collection/collection.dart';
 
@@ -13,7 +14,16 @@ final basketProvider =
 
 class BasketProvider extends StateNotifier<List<BasketItemModel>> {
   final UserMeRepository repository;
-  BasketProvider({required this.repository}) : super([]);
+  final updateBasketDebounce = Debouncer(
+    const Duration(seconds: 1),
+    initialValue: null,
+    checkEquality: false,
+  );
+  BasketProvider({required this.repository}) : super([]) {
+    updateBasketDebounce.values.listen((event) {
+      patchBasket();
+    });
+  }
 
   Future<void> patchBasket() async {
     await repository.patchBasket(
@@ -53,7 +63,8 @@ class BasketProvider extends StateNotifier<List<BasketItemModel>> {
     //Optimistic Response ( 긍정적 응답 )
     // 데이터 통신이 성공할거라고 가정한 후 데이터 통신을 진행. 좀더 좋은 사용자 경험을 얻을수 있음
     // 실패할 가능성이 매우매우 적고 실패해도 극정인 영향이 없을 경우 사용
-    await patchBasket();
+    // await patchBasket();
+    updateBasketDebounce.setValue(null);
   }
 
   Future<void> removeFromBasket({
@@ -80,6 +91,7 @@ class BasketProvider extends StateNotifier<List<BasketItemModel>> {
               e.product.id == product.id ? e.copyWith(count: e.count - 1) : e)
           .toList();
     }
-    await patchBasket();
+    // await patchBasket();
+    updateBasketDebounce.setValue(null);
   }
 }
